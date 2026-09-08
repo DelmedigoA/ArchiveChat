@@ -93,14 +93,16 @@ PYTHONPATH=src uv run python -m archivechat.chat \
   --web-tools
 ```
 
-The web UI streams assistant responses from `/api/chat/stream`. The status pill
-shows actual graph/tool activity such as searching the archive, reading archive
+The web UI streams assistant responses from `/api/chat/stream`. While the graph
+is working, status messages such as searching the archive, reading archive
 records, checking project context, checking FAQ metadata, searching the Bearing
 Witness document, reading document pages, checking public web context, and
-writing the answer. The web UI renders archive citations inline. When the model
-writes a Markdown source link next to a claim, the browser turns that archive
-source into a clickable marker such as `[1]`; clicking it opens the item/catalog
-record modal with summary, URL, and tags.
+writing the answer appear inside the assistant message. As text arrives, the UI
+re-renders the accumulated answer so Markdown formatting appears live. Completed
+`read_item` tool calls emit item events, allowing source links to become
+clickable citation markers such as `[1]` before the final message when the item
+is already known; clicking a marker opens the item/catalog record modal with
+summary, URL, and tags.
 
 Fully explicit local web UI command:
 

@@ -6,7 +6,7 @@ from langchain_core.messages import AIMessage, ToolMessage
 from starlette.testclient import TestClient
 
 from archivechat.models import ArticleContent, Item
-from archivechat.web.app import chunk_text, create_app
+from archivechat.web.app import chunk_text, create_app, item_from_tool_event
 
 
 def test_chat_api_returns_answer_and_read_items():
@@ -77,6 +77,7 @@ def test_chat_stream_returns_status_deltas_final_items_and_done():
             assert version == 'v2'
             yield {'event': 'on_tool_start', 'name': 'search_items', 'data': {}}
             yield {'event': 'on_tool_start', 'name': 'read_item', 'data': {}}
+            yield {'event': 'on_tool_end', 'name': 'read_item', 'data': {'output': ToolMessage(content=json.dumps(item.model_dump(mode='json')), tool_call_id='read-1', name='read_item')}}
             yield {'event': 'on_chat_model_stream', 'name': 'model', 'data': {'chunk': FakeChunk()}}
             yield {'event': 'on_chain_end', 'name': 'LangGraph', 'data': {'output': {'messages': [
                 *payload['messages'],
@@ -93,6 +94,7 @@ def test_chat_stream_returns_status_deltas_final_items_and_done():
     assert 'event: status' in body
     assert 'Searching the archive' in body
     assert 'Reading archive records' in body
+    assert 'event: item' in body
     assert 'event: delta' in body
     assert 'Streaming answer' in body
     assert 'event: final' in body
@@ -119,3 +121,26 @@ def test_chunk_text_filters_responses_api_non_text_blocks():
         ]
 
     assert chunk_text(Chunk()) == 'Visible answer'
+
+
+
+def test_item_from_tool_event_extracts_read_item_summary():
+    item = Item(
+        id=uuid4(),
+        contents=[ArticleContent(id=uuid4(), url='https://example.org/source', title='Source title', text_body='Source body')],
+    )
+    event = {
+        'event': 'on_tool_end',
+        'name': 'read_item',
+        'data': {'output': ToolMessage(content=json.dumps(item.model_dump(mode='json')), tool_call_id='read-1', name='read_item')},
+    }
+
+    summary = item_from_tool_event(event)
+
+    assert summary['item_id'] == str(item.id)
+    assert summary['title'] == 'Source title'
+    assert summary['url'] == 'https://example.org/source'
+
+
+def test_item_from_tool_event_ignores_non_read_item_events():
+    assert item_from_tool_event({'event': 'on_tool_end', 'name': 'search_items', 'data': {'output': []}}) is None

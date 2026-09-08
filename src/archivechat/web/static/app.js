@@ -71,7 +71,7 @@ appendMessage("assistant", openingSentences[Math.floor(Math.random() * openingSe
 
 async function ask(question) {
   setBusy(true);
-  const streamNode = appendStreamingAssistantMessage();
+  const streamState = createStreamState();
   try {
     const response = await fetch("/api/chat/stream", {
       method: "POST",
@@ -83,13 +83,13 @@ async function ask(question) {
     });
     if (!response.ok || !response.body) {
       const payload = await response.json().catch(() => ({}));
-      streamNode.remove();
+      streamState.node.remove();
       appendMessage("assistant", payload.detail || payload.error || "Chat failed.");
       return;
     }
-    await readChatStream(response.body, streamNode);
+    await readChatStream(response.body, streamState);
   } catch (error) {
-    streamNode.remove();
+    streamState.node.remove();
     appendMessage("assistant", `Request failed: ${error.message}`);
   } finally {
     setBusy(false);
@@ -102,7 +102,7 @@ function setBusy(value) {
   els.composer.querySelector("button").disabled = value;
 }
 
-async function readChatStream(body, streamNode) {
+async function readChatStream(body, streamState) {
   const reader = body.getReader();
   const decoder = new TextDecoder();
   let buffer = "";
@@ -115,11 +115,11 @@ async function readChatStream(body, streamNode) {
     const events = buffer.split("\n\n");
     buffer = events.pop() || "";
     for (const eventText of events) {
-      handleStreamEvent(parseServerSentEvent(eventText), streamNode);
+      handleStreamEvent(parseServerSentEvent(eventText), streamState);
     }
   }
   if (buffer.trim()) {
-    handleStreamEvent(parseServerSentEvent(buffer), streamNode);
+    handleStreamEvent(parseServerSentEvent(buffer), streamState);
   }
 }
 
@@ -139,18 +139,20 @@ function parseServerSentEvent(text) {
   return event;
 }
 
-function handleStreamEvent(event, streamNode) {
+function handleStreamEvent(event, streamState) {
   if (event.event === "status") {
-    updateStreamingStatus(streamNode, event.data.message || "Working…");
+    updateStreamingStatus(streamState, event.data.message || "Working…");
+  } else if (event.event === "item") {
+    addStreamItem(streamState, event.data.item);
   } else if (event.event === "delta") {
-    appendStreamingText(streamNode, event.data.text || "");
+    appendStreamingText(streamState, event.data.text || "");
   } else if (event.event === "final") {
     for (const item of event.data.items || []) {
-      state.items.set(item.item_id, item);
+      addStreamItem(streamState, item);
     }
-    replaceWithAssistantMessage(streamNode, event.data.answer || "", event.data.items || []);
+    replaceWithAssistantMessage(streamState, event.data.answer || "");
   } else if (event.event === "error") {
-    streamNode.remove();
+    streamState.node.remove();
     appendMessage("assistant", event.data.detail || event.data.message || "Chat failed.");
   }
 }
@@ -171,38 +173,62 @@ function appendAssistantMessage(answer, items) {
   node.scrollIntoView({ block: "end" });
 }
 
-function appendStreamingAssistantMessage() {
+function createStreamState() {
   const node = document.createElement("article");
   node.className = "message message--assistant message--streaming";
-  node.dataset.hasAnswerText = "false";
-  updateStreamingStatus(node, "Working…");
+  const streamState = {
+    node,
+    rawAnswer: "",
+    items: [],
+    itemIds: new Set(),
+    hasAnswerText: false,
+  };
+  updateStreamingStatus(streamState, "Working…");
   els.messages.appendChild(node);
   node.scrollIntoView({ block: "end" });
-  return node;
+  return streamState;
 }
 
-function updateStreamingStatus(node, message) {
-  if (node.dataset.hasAnswerText === "true") {
+function updateStreamingStatus(streamState, message) {
+  if (streamState.hasAnswerText) {
     return;
   }
-  node.innerHTML = `<span class="message-status">${escapeHtml(message)}</span>`;
-  node.scrollIntoView({ block: "end" });
+  streamState.node.innerHTML = `<span class="message-status">${escapeHtml(message)}</span>`;
+  streamState.node.scrollIntoView({ block: "end" });
 }
 
-function appendStreamingText(node, text) {
-  if (node.dataset.hasAnswerText !== "true") {
-    node.dataset.hasAnswerText = "true";
-    node.textContent = "";
+function addStreamItem(streamState, item) {
+  if (!item || !item.item_id || streamState.itemIds.has(item.item_id)) {
+    return;
   }
-  node.textContent += text;
-  node.scrollIntoView({ block: "end" });
+  streamState.itemIds.add(item.item_id);
+  streamState.items.push(item);
+  state.items.set(item.item_id, item);
+  renderStreamingAnswer(streamState);
 }
 
-function replaceWithAssistantMessage(node, answer, items) {
-  node.classList.remove("message--streaming");
-  delete node.dataset.hasAnswerText;
-  node.innerHTML = renderAnswer(answer, items);
-  node.scrollIntoView({ block: "end" });
+function appendStreamingText(streamState, text) {
+  if (!text) {
+    return;
+  }
+  streamState.hasAnswerText = true;
+  streamState.rawAnswer += text;
+  renderStreamingAnswer(streamState);
+}
+
+function renderStreamingAnswer(streamState) {
+  if (!streamState.hasAnswerText) {
+    return;
+  }
+  streamState.node.innerHTML = renderAnswer(streamState.rawAnswer, streamState.items);
+  streamState.node.scrollIntoView({ block: "end" });
+}
+
+function replaceWithAssistantMessage(streamState, answer) {
+  streamState.node.classList.remove("message--streaming");
+  streamState.rawAnswer = answer;
+  streamState.hasAnswerText = true;
+  renderStreamingAnswer(streamState);
 }
 
 function renderAnswer(answer, items) {

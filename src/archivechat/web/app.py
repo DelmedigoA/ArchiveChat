@@ -11,7 +11,7 @@ from starlette.responses import FileResponse, JSONResponse, StreamingResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
-from archivechat.chat.results import extract_read_items, item_summary, message_text
+from archivechat.chat.results import _json_from_content, extract_read_items, item_summary, message_text
 
 
 STATIC_DIR = Path(__file__).with_name('static')
@@ -52,11 +52,26 @@ def chunk_text(chunk: Any) -> str:
     return ''
 
 
-def final_payload(result_messages: list[Any]) -> dict[str, Any]:
+def final_payload(result_messages: list[Any], start_index: int = 0) -> dict[str, Any]:
+    current_turn_messages = result_messages[start_index:]
     return {
         'answer': message_text(result_messages[-1].content),
-        'items': [item_summary(item) for item in extract_read_items(result_messages)],
+        'items': [item_summary(item) for item in extract_read_items(current_turn_messages)],
     }
+
+
+def item_from_tool_event(event: dict[str, Any]) -> dict[str, Any] | None:
+    if event.get('event') != 'on_tool_end' or event.get('name') != 'read_item':
+        return None
+    output = event.get('data', {}).get('output')
+    payload = None
+    if isinstance(output, dict):
+        payload = output
+    else:
+        payload = _json_from_content(getattr(output, 'content', None))
+    if isinstance(payload, dict) and payload.get('id') and payload.get('contents') is not None:
+        return item_summary(payload)
+    return None
 
 
 def result_messages_from_event(event: dict[str, Any]) -> list[Any] | None:
@@ -79,6 +94,7 @@ def create_app(graph: Any, initial_messages: list[Any] | None = None, static_dir
         question = str(payload.get('question') or '').strip()
         if not question:
             return JSONResponse({'error': 'Question is required'}, status_code=400)
+        turn_start_index = len(messages)
         try:
             result = graph.invoke({'messages': [*messages, HumanMessage(content=question)]}, {'recursion_limit': 25})
         except Exception as exc:
@@ -86,7 +102,7 @@ def create_app(graph: Any, initial_messages: list[Any] | None = None, static_dir
 
         result_messages = result['messages']
         messages[:] = result_messages
-        return JSONResponse(final_payload(result_messages))
+        return JSONResponse(final_payload(result_messages, turn_start_index))
 
     async def chat_stream(request: Request):
         payload = await request.json()
@@ -95,8 +111,10 @@ def create_app(graph: Any, initial_messages: list[Any] | None = None, static_dir
             return JSONResponse({'error': 'Question is required'}, status_code=400)
 
         async def events() -> AsyncIterator[str]:
+            turn_start_index = len(messages)
             final_messages = None
             emitted_text = False
+            emitted_item_ids = set()
             last_status = None
             try:
                 last_status = 'Working…'
@@ -121,6 +139,10 @@ def create_app(graph: Any, initial_messages: list[Any] | None = None, static_dir
                                 last_status = 'Writing answer…'
                                 yield sse('status', {'message': last_status})
                             yield sse('delta', {'text': text})
+                    item = item_from_tool_event(event)
+                    if item and item.get('item_id') not in emitted_item_ids:
+                        emitted_item_ids.add(item.get('item_id'))
+                        yield sse('item', {'item': item})
                     maybe_messages = result_messages_from_event(event)
                     if maybe_messages:
                         final_messages = maybe_messages
@@ -128,7 +150,7 @@ def create_app(graph: Any, initial_messages: list[Any] | None = None, static_dir
                 if final_messages is None:
                     raise RuntimeError('Streaming completed without final graph messages')
                 messages[:] = final_messages
-                yield sse('final', {**final_payload(final_messages), 'replace': emitted_text})
+                yield sse('final', {**final_payload(final_messages, turn_start_index), 'replace': emitted_text})
                 yield sse('done', {})
             except Exception as exc:
                 yield sse('error', {'message': 'Chat failed', 'detail': str(exc)})

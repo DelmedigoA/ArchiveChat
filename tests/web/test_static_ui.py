@@ -68,6 +68,8 @@ def test_static_ui_uses_streaming_chat_endpoint_and_statuses():
     assert 'function handleStreamEvent' in app_js
     assert 'Working…' in app_js
     assert 'function updateStreamingStatus' in app_js
+    assert 'function renderStreamingAnswer' in app_js
+    assert 'function addStreamItem' in app_js
     assert 'message-status' in app_js
     assert 'els.status.textContent = "Ready"' in app_js
     assert 'els.status.dataset.state' not in app_js
@@ -88,7 +90,17 @@ def test_streaming_message_has_active_indicator():
 def test_streaming_status_renders_inside_message_not_header():
     app_js = STATIC_APP.read_text()
 
-    assert 'updateStreamingStatus(streamNode, event.data.message || "Working…")' in app_js
+    assert 'updateStreamingStatus(streamState, event.data.message || "Working…")' in app_js
     assert 'node.innerHTML = `<span class="message-status">${escapeHtml(message)}</span>`;' in app_js
-    assert 'node.dataset.hasAnswerText === "true"' in app_js
+    assert 'streamState.hasAnswerText' in app_js
     assert 'els.status.textContent = event.data.message' not in app_js
+
+
+
+def test_streaming_answer_rerenders_markdown_live():
+    app_js = STATIC_APP.read_text()
+
+    assert 'streamState.rawAnswer += text' in app_js
+    assert 'renderAnswer(streamState.rawAnswer, streamState.items)' in app_js
+    assert 'event.event === "item"' in app_js
+    assert 'addStreamItem(streamState, event.data.item)' in app_js
