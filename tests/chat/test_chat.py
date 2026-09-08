@@ -87,7 +87,11 @@ def test_graph_searches_reads_and_answers(tmp_path):
             return self
 
         def invoke(self, messages):
-            assert messages[0].content == prompt
+            assert messages[0].content.startswith(prompt)
+            assert 'Runtime collection status:' in messages[0].content
+            assert 'Available inspectable archive catalog records/items: 0 catalog records across 1 items.' in messages[0].content
+            assert 'Main Bearing Witness document: not loaded; searchable page count: 0.' in messages[0].content
+            assert 'beta ArchiveChat build' in messages[0].content
             results = [m for m in messages if isinstance(m, ToolMessage)]
             if not results:
                 return AIMessage(content='', tool_calls=[dict(name='search_items', args={'query': 'ambulances'}, id='search')])
@@ -211,3 +215,38 @@ def test_graph_exposes_faq_tools_when_configured(tmp_path):
     ).invoke({'messages': [HumanMessage(content='Who manages this project?')]})
 
     assert result['messages'][-1].content == 'A full FAQ answer.'
+
+
+def test_runtime_context_counts_catalog_faq_and_document_records(tmp_path):
+    item = write_item(tmp_path, 'with_catalog.json', 'With catalog', 'archive body')
+    # Reuse the fixture-like item_data shape indirectly by attaching a catalog-free item above,
+    # then verify the runtime context still reports item count separately from catalog count.
+
+    class FakeFaqs:
+        faqs = {'faq-1': {}, 'faq-2': {}}
+
+    class FakeDocument:
+        title = 'Bearing Witness Test Document'
+        pages = [object(), object(), object()]
+
+    class PromptCaptureModel:
+        def bind_tools(self, tools):
+            return self
+
+        def invoke(self, messages):
+            return AIMessage(content=messages[0].content)
+
+    result = build_graph(
+        Collection(tmp_path),
+        PromptCaptureModel(),
+        prompt='Base prompt.',
+        faq_collection=FakeFaqs(),
+        document_collection=FakeDocument(),
+    ).invoke({'messages': [HumanMessage(content='status?')]})
+
+    content = result['messages'][-1].content
+    assert 'Available inspectable archive catalog records/items: 0 catalog records across 1 items.' in content
+    assert 'Project FAQ records available through dedicated FAQ tools: 2.' in content
+    assert 'Main Bearing Witness document: Bearing Witness Test Document; searchable page count: 3.' in content
+    assert "Treat the Bearing Witness document as the project's main analytical source." in content
+    assert 'most references cited inside the Bearing Witness document do not yet have inspectable archive items' in content

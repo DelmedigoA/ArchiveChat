@@ -67,9 +67,11 @@ def build_graph(
         tools.extend([search_faqs, read_faq])
     tools.extend(extra_tools or [])
     bound = model.bind_tools(tools)
+    runtime_context = _runtime_context(collection, faq_collection, document_collection)
+    full_prompt = f'{prompt}\n\n{runtime_context}'
 
     def agent(state: MessagesState):
-        return {'messages': [bound.invoke([SystemMessage(content=prompt), *state['messages']])]}
+        return {'messages': [bound.invoke([SystemMessage(content=full_prompt), *state['messages']])]}
 
     graph = StateGraph(MessagesState)
     graph.add_node('agent', agent)
@@ -78,3 +80,24 @@ def build_graph(
     graph.add_conditional_edges('agent', tools_condition)
     graph.add_edge('tools', 'agent')
     return graph.compile()
+
+
+def _runtime_context(
+    collection: Collection,
+    faq_collection: FaqCollection | None,
+    document_collection: DocumentCollection | None,
+) -> str:
+    catalog_records = sum(1 for item in collection.items.values() if item.catalog_record is not None)
+    item_count = len(collection.items)
+    faq_count = len(getattr(faq_collection, 'faqs', {})) if faq_collection else 0
+    document_pages = len(getattr(document_collection, 'pages', [])) if document_collection else 0
+    document_title = getattr(document_collection, 'title', 'Bearing Witness document') if document_collection else 'not loaded'
+    return (
+        'Runtime collection status:\n'
+        f'- Available inspectable archive catalog records/items: {catalog_records} catalog records across {item_count} items.\n'
+        f'- Project FAQ records available through dedicated FAQ tools: {faq_count}.\n'
+        f'- Main Bearing Witness document: {document_title}; searchable page count: {document_pages}.\n'
+        "- Treat the Bearing Witness document as the project's main analytical source.\n"
+        '- This is a beta ArchiveChat build: most references cited inside the Bearing Witness document do not yet have inspectable archive items/catalog records available in this chat.\n'
+        '- When a document citation has no inspectable item, say that the document supports the point but the referenced source is not available for item-modal inspection here.'
+    )
