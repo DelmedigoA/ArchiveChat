@@ -19,3 +19,11 @@ def test_citation_links_are_styled():
 
     assert '.citation-link' in styles
     assert 'border-radius: 999px' in styles
+
+
+def test_answer_renderer_supports_basic_inline_markdown():
+    app_js = STATIC_APP.read_text()
+
+    assert 'function renderInlineMarkdown' in app_js
+    assert '<strong>$1</strong>' in app_js
+    assert '<em>$2</em>' in app_js

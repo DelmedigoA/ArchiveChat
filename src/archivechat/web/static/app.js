@@ -117,7 +117,8 @@ function renderAnswer(answer, items) {
   const citationNumbers = new Map();
   let nextCitationNumber = 1;
   const escaped = escapeHtml(answer);
-  const linked = escaped.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, (match, label, url) => {
+  const formatted = renderInlineMarkdown(escaped);
+  const linked = formatted.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, (match, label, url) => {
     const item = byUrl.get(normalizeUrl(url));
     if (!item) {
       return `<a href="${escapeAttribute(url)}" target="_blank" rel="noreferrer">${label}</a>`;
@@ -136,6 +137,14 @@ function renderAnswer(answer, items) {
     .map((paragraph) => `<p>${paragraph.replace(/\n/g, "<br>")}</p>`)
     .join("");
 }
+function renderInlineMarkdown(text) {
+  return text
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/__([^_]+)__/g, '<strong>$1</strong>')
+    .replace(/(^|\s)\*([^*]+)\*/g, '$1<em>$2</em>')
+    .replace(/(^|\s)_([^_]+)_/g, '$1<em>$2</em>');
+}
+
 function openItemModal(item) {
   closeItemModal();
   const catalog = item.catalog || {};
