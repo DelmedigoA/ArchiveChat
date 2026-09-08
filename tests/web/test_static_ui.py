@@ -45,3 +45,13 @@ def test_enter_submits_and_shift_enter_keeps_multiline_input():
     assert 'event.key === "Enter" && !event.shiftKey' in app_js
     assert 'event.preventDefault()' in app_js
     assert 'els.composer.requestSubmit()' in app_js
+
+
+def test_opening_sentence_is_randomized_on_page_load():
+    app_js = STATIC_APP.read_text()
+
+    assert 'const openingSentences = [' in app_js
+    assert 'Math.floor(Math.random() * openingSentences.length)' in app_js
+    assert 'What would you like to understand from the archive?' not in app_js
+    assert 'Ask a question about the archive, the document, or the evidence.' in app_js
+    assert 'Start with a question about what happened, how it was documented, or what the sources show.' in app_js

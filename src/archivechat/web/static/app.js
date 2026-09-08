@@ -59,7 +59,15 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-appendMessage("assistant", "What would you like to understand from the archive?");
+const openingSentences = [
+  "Ask a question about the archive, the document, or the evidence.",
+  "Explore the archive through questions about events, sources, patterns, and context.",
+  "Search the archive by asking about a claim, event, source, or theme.",
+  "Ask about Gaza, the Bearing Witness document, or the materials collected in the archive.",
+  "Start with a question about what happened, how it was documented, or what the sources show.",
+];
+
+appendMessage("assistant", openingSentences[Math.floor(Math.random() * openingSentences.length)]);
 
 async function ask(question) {
   setBusy(true);
