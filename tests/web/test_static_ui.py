@@ -27,3 +27,13 @@ def test_answer_renderer_supports_basic_inline_markdown():
     assert 'function renderInlineMarkdown' in app_js
     assert '<strong>$1</strong>' in app_js
     assert '<em>$2</em>' in app_js
+
+
+def test_bearing_witness_fonts_are_loaded():
+    index = Path('src/archivechat/web/static/index.html').read_text()
+    styles = STATIC_CSS.read_text()
+
+    assert 'family=Figtree' in index
+    assert 'IBM+Plex+Sans' in index
+    assert '--font-heading: "IBM Plex Sans"' in styles
+    assert '--font-body: "Figtree"' in styles

@@ -12,7 +12,9 @@
   --accent-dark: #6c1818;
   --accent-soft: #f5eae7;
   --shadow: 0 22px 70px rgba(90, 43, 31, 0.12);
-  font-family: "IBM Plex Sans", Arial, Helvetica, sans-serif;
+  --font-heading: "IBM Plex Sans", Arial, Helvetica, sans-serif;
+  --font-body: "Figtree", "IBM Plex Sans", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
 }
 
 * {
@@ -72,6 +74,7 @@ textarea {
 }
 
 .kicker {
+  font-family: var(--font-heading);
   color: var(--accent);
   font-size: 11px;
   font-weight: 700;
@@ -79,6 +82,7 @@ textarea {
 }
 
 .intro h1 {
+  font-family: var(--font-heading);
   margin: 10px 0 12px;
   color: var(--accent);
   font-size: clamp(30px, 5vw, 42px);
@@ -121,6 +125,7 @@ textarea {
 }
 
 .chat-header h2 {
+  font-family: var(--font-heading);
   margin: 0;
   font-size: 17px;
   font-weight: 600;
@@ -306,6 +311,7 @@ textarea {
 }
 
 .item-modal h2 {
+  font-family: var(--font-heading);
   margin: 0;
   max-width: calc(100% - 52px);
   color: #333333;
