@@ -53,10 +53,15 @@ def test_default_project_metadata_contains_document_and_hebrew_about_records():
 
     assert records['about-bearing-witness-gaza']['kind'] == 'project_about_metadata'
     assert records['document-record']['kind'] == 'document_metadata'
+    assert records['lee-mordechai-author']['kind'] == 'author_metadata'
     assert records['author-and-document-about-he']['language'] == 'he'
     assert records['about-bearing-witness-gaza']['source_url'] == 'https://bearing-witness.com/about/'
     assert 'open knowledge space' in metadata.read('about-bearing-witness-gaza')['content']
     assert metadata.read('document-record')['content']['version'] == 'v6.7.0'
+    lee = metadata.read('lee-mordechai-author')['content']
+    assert lee['name'] == 'Dr. Lee Mordechai'
+    assert 'working at an Israeli university' in lee['summary']
+    assert lee['source_record_id'] == 'author-and-document-about-he'
     assert 'לי מרדכי' in metadata.read('author-and-document-about-he')['content']
 
 

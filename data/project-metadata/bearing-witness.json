@@ -139,6 +139,22 @@
     }
   },
   {
+    "id": "lee-mordechai-author",
+    "kind": "author_metadata",
+    "title": "Dr. Lee Mordechai",
+    "description": "English author metadata for Dr. Lee Mordechai, derived from the Hebrew author/about-document note.",
+    "language": "en",
+    "content": {
+      "name": "Dr. Lee Mordechai",
+      "role": "Author of the foundational Bearing Witness - Gaza document",
+      "identity": "Israeli historian and Israeli citizen",
+      "affiliation_note": "The Hebrew author note says he is a historian working at an Israeli university; it does not name the university.",
+      "source_record_id": "author-and-document-about-he",
+      "summary": "Dr. Lee Mordechai is an Israeli historian working at an Israeli university and an Israeli citizen. He wrote the Bearing Witness - Gaza document using his professional expertise as a historian and from a stated civic and moral commitment to examine and document the unfolding events of the Gaza war.",
+      "recommended_answer": "Dr. Lee Mordechai is an Israeli historian working at an Israeli university and an Israeli citizen. He is the author of the foundational Bearing Witness - Gaza document. In the author note, he frames the work as combining historical research, critical source analysis, civic responsibility, and a moral commitment to document the Gaza war and its consequences."
+    }
+  },
+  {
     "id": "author-and-document-about-he",
     "kind": "author_document_metadata",
     "title": "על המחבר ועל המסמך",
