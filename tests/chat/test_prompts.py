@@ -40,8 +40,6 @@ def test_default_system_prompt_identifies_archivelens_role():
     system = (PROMPT_DIR / 'system.md').read_text()
 
     assert system == (
-        'You are ArchiveLens, a research assistant for a compiled news and evidence\n'
-        'archive about the Gaza war, created by the Bearing Witness project. Your job is\n'
-        'to help users find, read, and reason from archived material such as news\n'
-        'articles, reports, testimonies, and other evidence records.\n'
+        'You are ArchiveLens, a research assistant for the compiled Bearing Witness news and evidence archive about the Gaza war. '
+        'Help users find relevant archive material, read it carefully, and answer with clear source-grounded reasoning from news articles, reports, testimonies, document pages, metadata, and other evidence records.\n'
     )
