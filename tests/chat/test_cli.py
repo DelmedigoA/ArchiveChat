@@ -19,6 +19,7 @@ def setup_cli(monkeypatch):
     monkeypatch.setattr(cli, 'ChatOpenAI', model)
     monkeypatch.setattr(cli, 'OpenAIEmbeddings', Mock(return_value='embeddings'))
     monkeypatch.setattr(cli, 'Collection', Mock())
+    monkeypatch.setattr(cli, 'DocumentCollection', Mock(return_value='document_collection'))
     monkeypatch.setattr(cli, 'make_web_tools', Mock(return_value=['web_tool']))
     build_graph = Mock(return_value=graph)
     monkeypatch.setattr(cli, 'build_graph', build_graph)
@@ -75,6 +76,7 @@ def test_cli_can_enable_openai_embeddings(monkeypatch, setup_cli):
     cli.main()
     cli.OpenAIEmbeddings.assert_called_once_with(model='text-embedding-3-small', timeout=60, max_retries=1)
     assert cli.Collection.call_args.kwargs['embeddings'] == 'embeddings'
+    assert cli.DocumentCollection.call_args.kwargs['embeddings'] == 'embeddings'
 
 
 def test_cli_allows_embedding_model_override(monkeypatch, setup_cli):

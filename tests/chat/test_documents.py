@@ -83,3 +83,24 @@ def test_graph_exposes_bearing_witness_document_tools(tmp_path):
     ).invoke({'messages': [HumanMessage(content='What does the document say about hospitals?')]})
 
     assert result['messages'][-1].content == 'Full document evidence'
+
+
+def test_document_search_uses_embeddings_for_semantic_matches_without_keyword_overlap(tmp_path):
+    text_file = tmp_path / 'document.txt'
+    text_file.write_text('ambulances transported patients.\frecipes and kitchens.')
+
+    class FakeEmbeddings:
+        def embed_documents(self, texts):
+            return [[1.0, 0.0] if 'ambulances' in text else [0.0, 1.0] for text in texts]
+
+        def embed_query(self, text):
+            return [1.0, 0.0]
+
+    document = DocumentCollection(text_file, embeddings=FakeEmbeddings())
+    hits = document.search('medical evacuation', limit=2)
+
+    assert hits[0]['page'] == 1
+    assert hits[0]['semantic_score'] > 0.99
+    assert hits[0]['bm25_score'] == 0
+    assert hits[0]['score'] == hits[0]['semantic_score']
+    assert {hit['page'] for hit in hits} == {1}

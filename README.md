@@ -115,7 +115,7 @@ PYTHONPATH=src uv run python -m archivechat.web \
   --port 8765
 ```
 
-To add semantic search with OpenAI embeddings:
+To add semantic search with OpenAI embeddings for archive items and document pages:
 
 ```sh
 cd ~/Dev/ArchiveChat
@@ -151,8 +151,8 @@ for the current terminal session only.
 
 The LangGraph loop is `agent → tools → agent → answer`. `search_items` returns
 up to ten candidates using BM25 across catalog metadata and article and social-thread text. With
-`--semantic-search`, it also embeds each item at collection load time and adds
-cosine similarity to the BM25 score. `read_item` returns the entire stored item
+`--semantic-search`, it also embeds each item and each Bearing Witness document
+page at collection load time, then adds cosine similarity to the BM25 score. `read_item` returns the entire stored item
 without truncating its articles. FAQ context is separate: `search_faqs` searches
 only FAQ questions as level-1 records, and `read_faq` returns the level-2 answer
 for a selected FAQ. The Bearing Witness document is also separate:

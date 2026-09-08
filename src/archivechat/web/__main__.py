@@ -50,7 +50,7 @@ def main():
         embeddings = OpenAIEmbeddings(model=args.embedding_model, timeout=60, max_retries=1)
     collection = Collection(args.collection, embeddings=embeddings)
     faq_collection = FaqCollection(args.faq_file)
-    document_collection = DocumentCollection(args.document_text) if args.document_text.exists() else None
+    document_collection = DocumentCollection(args.document_text, embeddings=embeddings) if args.document_text.exists() else None
     model_kwargs = {
         'model': args.model,
         'timeout': 60,
