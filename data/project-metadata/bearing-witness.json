@@ -145,5 +145,270 @@
     "description": "Hebrew metadata note about Lee Mordechai as author and the purpose of the document.",
     "language": "he",
     "content": "מסמך זה נכתב מתוך תחושת אחריות עמוקה ומחויבות להתמודדות עם המשבר ההומניטרי והפוליטי המתמשך ברצועת עזה. אני, לי מרדכי, היסטוריון העובד באוניברסיטה ישראלית ואזרח ישראלי, כתבתי אותו תוך שימוש במומחיות המקצועית שלי כהיסטוריון ומתוך מחויבות מוסרית לבחון ולתעד את האירועים המתגלגלים. על בסיס ניסיוני בביצוע מחקר קפדני וניתוח ביקורתי של מקורות, לקחתי על עצמי עבודה זו גם כאזרח המחויב להגיב לפעולות ממשלתו וגם כאקדמאי השואף להגן על זכויות אדם ועקרונות אתיים.\n\nמסמך זה נכתב מתוך אמונה כי שתיקה מול אי צדק אינה מתקבלת על הדעת. באווירה שבה קולות מחאה הם נדירים, המסמך שואף לשמש עדות לסבל האדיר המתרחש בשטח ולהציע תיאור מבוסס ראיות ושקיפות של הנעשה, כמיטב יכולתי. המסמך משקף את אמונתי בצורך לשלב בין מחקר מדויק ואחריות מוסרית לפעולה בעת התמודדות עם אירועים בעלי השלכות כה עמוקות על ההווה והעתיד במרחב שבין הירדן והים.\n\nהמסמך משמש בו בעת גם כהצהרה ציבורית וגם כאוסף של עדויות ועובדות. הוא שואף לעשות סדר במצב המורכב שלפתחנו. כתבתי את המסמך תוך כדי איסוף ראיות ממקורות מהימנים, כולל ארגוני סיוע הומניטרי, תחקירים ודו\"חות שונים, ועדויות ממקור ראשון, כדי להבין טוב יותר את הנעשה במלחמה ואת השפעותיה. במהותו, המסמך משמר תיעוד וסינתזה עבור אלו המחפשים להבין את המציאות לנגד הנרטיבים המנוגדים בשיח הציבורי.\n\nהמסמך כתוב בטון מדוד ועובדתי, ונמנע משפה רגשית כדי לתת לראיות לדבר בעד עצמן. באמצעות מסמך זה אני מקווה לתרום משהו לשיח הציבורי על המלחמה ולעודד קוראות וקוראים להתמודד באופן רציני עם ממדיה האנושיים וההיסטוריים.\n\nהמסמך הוא עבורי מעשה של עדות — שיקוף של מחויבותי לצדק, אחריות ואחריות אתית להבטיח שאירועי הימים האלו יסופרו וייזכרו. אני מזמין את הקוראות והקוראים לבחון באופן ביקורתי את הראיות ולשקול את השאלות המוסריות והפוליטיות שהמצב הנוכחי מעלה."
+  },
+  {
+    "id": "website-navigation-directory",
+    "kind": "website_metadata",
+    "title": "Bearing Witness website navigation directory",
+    "description": "Crawl-derived directory of public Bearing Witness website sections, links, language variants, and social channels for routing users to relevant project material.",
+    "language": "en",
+    "content": {
+      "source": "Public crawl of https://bearing-witness.com/ using robots.txt, sitemap.xml, and selected top-level navigation pages.",
+      "crawled_at": "2026-09-08",
+      "usage": "Use this record as project/navigation metadata for recommending where users can read more on the Bearing Witness website. Do not treat this record as evidence for factual claims about events in Gaza; use archive items or document pages for evidentiary claims.",
+      "site_identity": {
+        "site_name": "Witnessing the Gaza War",
+        "public_brand": "Bearing Witness",
+        "home_url": "https://bearing-witness.com/",
+        "site_description": "Lee Mordechai - document addressing the Gaza War",
+        "homepage_meta_description": "Bearing Witness brings together testimonies, data, and reports about the war in Gaza. Navigate individual stories and the bigger picture."
+      },
+      "primary_navigation": [
+        {
+          "group": "About the Project",
+          "items": [
+            {
+              "label": "About the Project",
+              "url": "https://bearing-witness.com/about/",
+              "description": "Project purpose, research model, archive metaphor, volunteers, and civic/historical responsibility."
+            },
+            {
+              "label": "FAQ",
+              "url": "https://bearing-witness.com/faq/",
+              "description": "Frequently asked questions about the project, scope, method, reliability, submissions, media, funding, and languages."
+            },
+            {
+              "label": "In The Media",
+              "url": "https://bearing-witness.com/media/",
+              "description": "Media appearances, interviews, articles, podcasts, and external coverage related to Bearing Witness and Lee Mordechai."
+            },
+            {
+              "label": "Media Kit",
+              "url": "https://bearing-witness.com/media-kit/",
+              "description": "Media-facing project materials."
+            }
+          ]
+        },
+        {
+          "group": "The Document",
+          "items": [
+            {
+              "label": "The Document - The Bigger Picture",
+              "url": "https://bearing-witness.com/bigger-picture/",
+              "description": "Current public entry point for the foundational Bearing Witness - Gaza document. The previously guessed /document/ URL returned 404 during crawl."
+            },
+            {
+              "label": "Previous Versions",
+              "url": "https://bearing-witness.com/previous-versions/",
+              "description": "Download links for earlier PDF versions dated January 9, 2024; January 30, 2024; February 18, 2024; March 15, 2024; April 15, 2024; and June 18, 2024."
+            }
+          ]
+        },
+        {
+          "group": "A Deeper Look",
+          "items": [
+            {
+              "label": "Articles",
+              "url": "https://bearing-witness.com/blog/",
+              "description": "Bearing Witness articles and essays in English, Hebrew, and Arabic."
+            },
+            {
+              "label": "Map of Gaza: Assessment of Damage",
+              "url": "https://bearing-witness.com/destruction/",
+              "title_on_page": "Gaza's Map of Destruction",
+              "description": "Interactive exploration of destruction patterns in Gaza across time and space, combining satellite data, geographic mapping, and data analysis."
+            },
+            {
+              "label": "Starvation Report",
+              "url": "https://bearing-witness.com/starvation-story/",
+              "title_on_page": "Starving Gaza",
+              "description": "Special report on food in the Gaza Strip, including background, timeline, declared intent, humanitarian aid, aid trucks, road to the plate, cost of survival, nutrition and hunger, consequences, and afterword."
+            },
+            {
+              "label": "Destruction of the Healthcare System Report",
+              "url": "https://bearing-witness.com/healthcare-story/",
+              "description": "English page currently states that the content is only available in Hebrew and links readers to the Hebrew version.",
+              "available_language_note": "As of crawl date, English page says: This page is currently only available in Hebrew.",
+              "hebrew_url": "https://bearing-witness.com/he/healthcare-story-2/",
+              "arabic_url": "https://bearing-witness.com/ar/healthcare-story-3/"
+            }
+          ]
+        },
+        {
+          "group": "Evidence",
+          "items": [
+            {
+              "label": "Archive",
+              "url": "https://bearing-witness.com/search-database/",
+              "title_on_page": "Bearing Witness: Gaza Archive",
+              "description": "Search and filter interface for archive records. The page includes record cards and filtering controls."
+            },
+            {
+              "label": "Testimonies",
+              "url": "https://bearing-witness.com/testimonies/",
+              "description": "Testimony hub with sections including About the archive of testimonies, Behind the Testimonies, International Doctors, and Gaza Healthcare Workers."
+            }
+          ]
+        },
+        {
+          "group": "Language",
+          "items": [
+            {
+              "label": "Hebrew",
+              "url": "https://bearing-witness.com/he/home-2/"
+            },
+            {
+              "label": "English",
+              "url": "https://bearing-witness.com/"
+            },
+            {
+              "label": "Arabic",
+              "url": "https://bearing-witness.com/ar/home-3/"
+            }
+          ]
+        },
+        {
+          "group": "Contact Us",
+          "items": [
+            {
+              "label": "Contact",
+              "url": "https://bearing-witness.com/contact/"
+            },
+            {
+              "label": "Volunteer",
+              "url": "https://bearing-witness.com/volunteer/"
+            },
+            {
+              "label": "Report Issue",
+              "url": "https://bearing-witness.com/report-issue/"
+            }
+          ]
+        }
+      ],
+      "social_links": [
+        {
+          "label": "Facebook",
+          "url": "https://www.facebook.com/profile.php?id=61577826179121"
+        },
+        {
+          "label": "Instagram",
+          "url": "https://www.instagram.com/bearingwitnessgaza/"
+        },
+        {
+          "label": "X/Twitter",
+          "url": "https://x.com/witnessinggaza"
+        }
+      ],
+      "recommendation_examples": [
+        {
+          "user_interest": "damage assessment, destruction, maps, satellite damage, spatial analysis",
+          "recommended_link_text": "Gaza's Map of Destruction",
+          "recommended_url": "https://bearing-witness.com/destruction/",
+          "example_response": "If you are interested in damage assessment, you can read Gaza's Map of Destruction: https://bearing-witness.com/destruction/"
+        },
+        {
+          "user_interest": "food access, hunger, starvation, aid trucks, humanitarian aid",
+          "recommended_link_text": "Starving Gaza",
+          "recommended_url": "https://bearing-witness.com/starvation-story/"
+        },
+        {
+          "user_interest": "medical system, hospitals, chronic illness, healthcare destruction",
+          "recommended_link_text": "Destruction of the Healthcare System Report",
+          "recommended_url": "https://bearing-witness.com/healthcare-story/",
+          "note": "Tell English readers that the page currently directs to the Hebrew version: https://bearing-witness.com/he/healthcare-story-2/"
+        },
+        {
+          "user_interest": "firsthand accounts, doctors, healthcare workers, testimony",
+          "recommended_link_text": "Testimonies",
+          "recommended_url": "https://bearing-witness.com/testimonies/"
+        },
+        {
+          "user_interest": "searching source records or archive items",
+          "recommended_link_text": "Bearing Witness: Gaza Archive",
+          "recommended_url": "https://bearing-witness.com/search-database/"
+        }
+      ]
+    }
+  },
+  {
+    "id": "website-sitemap-inventory",
+    "kind": "website_sitemap_metadata",
+    "title": "Bearing Witness sitemap inventory",
+    "description": "Summary of public XML sitemap coverage for Bearing Witness as of the crawl date.",
+    "language": "en",
+    "content": {
+      "source_url": "https://bearing-witness.com/sitemap.xml",
+      "robots_txt_url": "https://bearing-witness.com/robots.txt",
+      "crawled_at": "2026-09-08",
+      "robots_notes": {
+        "crawl_delay_seconds": 10,
+        "disallowed_paths": [
+          "/admin/",
+          "/includes/",
+          "/config/",
+          "/logs/",
+          "/backup/",
+          "/.env",
+          "/wp-admin/",
+          "/wp-includes/"
+        ]
+      },
+      "sitemaps": [
+        {
+          "type": "pages",
+          "url": "https://bearing-witness.com/page-sitemap.xml",
+          "url_count": 124,
+          "latest_lastmod": "2026-09-06T17:04:48+00:00"
+        },
+        {
+          "type": "blog_posts",
+          "url": "https://bearing-witness.com/blog-post-sitemap.xml",
+          "url_count": 57,
+          "latest_lastmod": "2026-07-24T10:13:45+00:00"
+        },
+        {
+          "type": "lexicon_items",
+          "url": "https://bearing-witness.com/lexicon-item-sitemap.xml",
+          "url_count": 42,
+          "latest_lastmod": "2026-01-08T15:27:42+00:00"
+        },
+        {
+          "type": "speakers",
+          "url": "https://bearing-witness.com/speaker-sitemap.xml",
+          "url_count": 153,
+          "latest_lastmod": "2026-09-07T19:40:14+00:00"
+        },
+        {
+          "type": "statements",
+          "url": "https://bearing-witness.com/statement-sitemap.xml",
+          "url_count": 100,
+          "latest_lastmod": "2026-08-29T07:29:40+00:00"
+        },
+        {
+          "type": "testimonies",
+          "url": "https://bearing-witness.com/testimony-sitemap.xml",
+          "url_count": 473,
+          "latest_lastmod": "2026-08-19T19:59:48+00:00"
+        },
+        {
+          "type": "testimony_types",
+          "url": "https://bearing-witness.com/testimony-type-sitemap.xml",
+          "url_count": 2,
+          "latest_lastmod": "2026-08-19T19:59:48+00:00",
+          "known_urls": [
+            "https://bearing-witness.com/testimony-type/gazan-doctors/",
+            "https://bearing-witness.com/testimony-type/international-doctors/"
+          ]
+        },
+        {
+          "type": "topics",
+          "url": "https://bearing-witness.com/topic-sitemap.xml",
+          "url_count": 10,
+          "latest_lastmod": "2026-08-29T07:29:40+00:00"
+        }
+      ],
+      "total_sitemap_url_entries": 961,
+      "usage": "Use this inventory to understand website coverage and available public sections. For specific factual answers, search/read archive evidence or Bearing Witness document pages rather than relying on this inventory."
+    }
   }
 ]
