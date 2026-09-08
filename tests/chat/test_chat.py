@@ -181,6 +181,65 @@ def test_graph_uses_configured_default_search_limit(tmp_path):
     assert seen_limits == [7]
 
 
+
+def test_graph_exposes_project_metadata_tools_when_configured(tmp_path):
+    store, _ = collection(tmp_path)
+
+    class FakeMetadata:
+        records = {'project-overview': {'title': 'Project overview'}}
+
+        def list_records(self):
+            return [{
+                'record_id': 'project-overview',
+                'kind': 'project_metadata',
+                'title': 'Project overview',
+                'description': 'Project context',
+                'language': 'en',
+            }]
+
+        def read(self, record_id):
+            return {
+                'record_id': record_id,
+                'kind': 'project_metadata',
+                'title': 'Project overview',
+                'content': 'Full metadata context.',
+            }
+
+    class MetadataModel:
+        def bind_tools(self, tools):
+            assert {t.name for t in tools} == {
+                'search_items', 'read_item', 'list_project_metadata_records', 'read_project_metadata_record'
+            }
+            return self
+
+        def invoke(self, messages):
+            assert 'metadata tools: 1' in messages[0].content
+            assert 'not evidence for claims about events in Gaza' in messages[0].content
+            results = [m for m in messages if isinstance(m, ToolMessage)]
+            if not results:
+                return AIMessage(content='', tool_calls=[dict(
+                    name='list_project_metadata_records', args={}, id='list-metadata'
+                )])
+            if len(results) == 1:
+                listed = json.loads(results[0].content)[0]
+                assert 'content' not in listed
+                return AIMessage(content='', tool_calls=[dict(
+                    name='read_project_metadata_record',
+                    args={'record_id': listed['record_id']},
+                    id='read-metadata',
+                )])
+            return AIMessage(content=json.loads(results[-1].content)['content'])
+
+    result = build_graph(
+        store,
+        MetadataModel(),
+        prompt='Test system prompt.',
+        project_metadata_collection=FakeMetadata(),
+    ).invoke({'messages': [HumanMessage(content='What is this project?')]})
+
+    assert result['messages'][-1].content == 'Full metadata context.'
+
+
 def test_graph_exposes_faq_tools_when_configured(tmp_path):
     store, _ = collection(tmp_path)
 
@@ -217,7 +276,7 @@ def test_graph_exposes_faq_tools_when_configured(tmp_path):
     assert result['messages'][-1].content == 'A full FAQ answer.'
 
 
-def test_runtime_context_counts_catalog_faq_and_document_records(tmp_path):
+def test_runtime_context_counts_catalog_faq_document_and_metadata_records(tmp_path):
     item = write_item(tmp_path, 'with_catalog.json', 'With catalog', 'archive body')
     # Reuse the fixture-like item_data shape indirectly by attaching a catalog-free item above,
     # then verify the runtime context still reports item count separately from catalog count.
@@ -228,6 +287,9 @@ def test_runtime_context_counts_catalog_faq_and_document_records(tmp_path):
     class FakeDocument:
         title = 'Bearing Witness Test Document'
         pages = [object(), object(), object()]
+
+    class FakeMetadata:
+        records = {'project-overview': {}, 'document-record': {}}
 
     class PromptCaptureModel:
         def bind_tools(self, tools):
@@ -242,11 +304,15 @@ def test_runtime_context_counts_catalog_faq_and_document_records(tmp_path):
         prompt='Base prompt.',
         faq_collection=FakeFaqs(),
         document_collection=FakeDocument(),
+        project_metadata_collection=FakeMetadata(),
     ).invoke({'messages': [HumanMessage(content='status?')]})
 
     content = result['messages'][-1].content
     assert 'Available inspectable archive catalog records/items: 0 catalog records across 1 items.' in content
     assert 'Project FAQ records available through dedicated FAQ tools: 2.' in content
+    assert 'Project metadata records available through dedicated metadata tools: 2.' in content
+    assert 'Project metadata describes ArchiveLens, Bearing Witness, the document structure' in content
+    assert 'not evidence for claims about events in Gaza' in content
     assert 'Main Bearing Witness document: Bearing Witness Test Document; searchable page count: 3.' in content
     assert "Treat the Bearing Witness document as the project's main analytical source." in content
     assert 'most references cited inside the Bearing Witness document do not yet have inspectable archive items' in content

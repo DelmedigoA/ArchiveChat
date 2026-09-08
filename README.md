@@ -63,7 +63,9 @@ Search returns up to ten item candidates by default; override that with
 questions by default; override that with `ARCHIVECHAT_FAQ_SEARCH_LIMIT` or
 `--faq-search-limit`. Bearing Witness document search returns up to five page
 matches by default; override that with `ARCHIVECHAT_DOCUMENT_SEARCH_LIMIT` or
-`--document-search-limit`. Reasoning runs through OpenAI's
+`--document-search-limit`. Project metadata is loaded from
+`data/project-metadata/bearing-witness.json` by default; override that with
+`ARCHIVECHAT_PROJECT_METADATA_FILE` or `--project-metadata-file`. Reasoning runs through OpenAI's
 Responses API; pass `--reasoning-effort none` to disable reasoning. Run:
 
 ```sh
@@ -85,6 +87,7 @@ PYTHONPATH=src uv run python -m archivechat.chat \
   --faq-search-limit 5 \
   --document-text data/documents/bearing-witness/gaza-english-v6.7.0.txt \
   --document-search-limit 5 \
+  --project-metadata-file data/project-metadata/bearing-witness.json \
   --semantic-search \
   --embedding-model text-embedding-3-small \
   --web-tools
@@ -109,6 +112,7 @@ PYTHONPATH=src uv run python -m archivechat.web \
   --faq-search-limit 5 \
   --document-text data/documents/bearing-witness/gaza-english-v6.7.0.txt \
   --document-search-limit 5 \
+  --project-metadata-file data/project-metadata/bearing-witness.json \
   --semantic-search \
   --embedding-model text-embedding-3-small \
   --web-tools \
@@ -153,7 +157,11 @@ The LangGraph loop is `agent → tools → agent → answer`. `search_items` ret
 up to ten candidates using BM25 across catalog metadata and article and social-thread text. With
 `--semantic-search`, it also embeds each item and each Bearing Witness document
 page at collection load time, then adds cosine similarity to the BM25 score. `read_item` returns the entire stored item
-without truncating its articles. FAQ context is separate: `search_faqs` searches
+without truncating its articles. Project metadata is separate: `list_project_metadata_records` returns available
+metadata records without their full content, and `read_project_metadata_record`
+returns the selected project/document/about record. The prompt labels metadata
+as context about ArchiveLens and Bearing Witness, not evidence for claims about
+events in Gaza. FAQ context is separate: `search_faqs` searches
 only FAQ questions as level-1 records, and `read_faq` returns the level-2 answer
 for a selected FAQ. The Bearing Witness document is also separate:
 `search_bearing_witness_document` searches page-level records, and

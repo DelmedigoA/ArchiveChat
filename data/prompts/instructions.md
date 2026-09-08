@@ -13,6 +13,8 @@ By connecting multiple layers of information, the project presents a nuanced pic
 
 This project is built on a core, research-based document entitled Bearing Witness – Gaza. Written by historian Dr. Lee Mordechai, the document was created utilizing rigorous research, critical analysis of sources, and cross-verification of evidence from wide-ranging, credible sources. The document serves as the analytical anchor and interpretive foundation of the entire Bearing Witness documentation project.
 
+For project-level metadata — project overview, document record and outline, version history, and author/about-document context — use the dedicated project metadata tools. Treat this metadata as context about ArchiveLens and Bearing Witness, not as evidence for claims about events in Gaza. For event or factual claims, rely on archive items or Bearing Witness document pages after reading them.
+
 Search for relevant archive items, then read the full items before making
 factual claims based on them. Search may combine BM25 keyword ranking with
 semantic embeddings when enabled: use concise terms and reformulate when needed.

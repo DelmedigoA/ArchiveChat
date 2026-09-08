@@ -20,6 +20,7 @@ def setup_cli(monkeypatch):
     monkeypatch.setattr(cli, 'OpenAIEmbeddings', Mock(return_value='embeddings'))
     monkeypatch.setattr(cli, 'Collection', Mock())
     monkeypatch.setattr(cli, 'DocumentCollection', Mock(return_value='document_collection'))
+    monkeypatch.setattr(cli, 'ProjectMetadataCollection', Mock(return_value='project_metadata_collection'))
     monkeypatch.setattr(cli, 'make_web_tools', Mock(return_value=['web_tool']))
     build_graph = Mock(return_value=graph)
     monkeypatch.setattr(cli, 'build_graph', build_graph)
@@ -69,6 +70,13 @@ def test_cli_allows_search_limit_override(monkeypatch, setup_cli):
     monkeypatch.setattr('sys.argv', ['archivechat', '--search-limit', '7', '--question', 'hi'])
     cli.main()
     assert setup_cli[2].call_args.kwargs['search_limit'] == 7
+
+
+def test_cli_passes_project_metadata_collection(monkeypatch, setup_cli):
+    monkeypatch.setattr('sys.argv', ['archivechat', '--question', 'hi'])
+    cli.main()
+    cli.ProjectMetadataCollection.assert_called_once()
+    assert setup_cli[2].call_args.kwargs['project_metadata_collection'] == 'project_metadata_collection'
 
 
 def test_cli_can_enable_openai_embeddings(monkeypatch, setup_cli):

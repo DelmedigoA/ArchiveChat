@@ -1,0 +1,60 @@
+[
+  {
+    "id": "project-overview",
+    "kind": "project_metadata",
+    "title": "Bearing Witness project overview",
+    "description": "High-level context about the Bearing Witness project and its purpose.",
+    "language": "en",
+    "content": "Bearing Witness is an independent, grassroots, long-term testimonial initiative established to confront the ongoing humanitarian, political, and human crisis in the Gaza Strip through facts, context, and systematic, evidence-based documentation. The project is more than an archive: it builds a long-term knowledge infrastructure designed to enable future understanding of events as part of an ongoing historical, political, and human continuum."
+  },
+  {
+    "id": "document-record",
+    "kind": "document_metadata",
+    "title": "Bearing Witness - Gaza Document",
+    "description": "Metadata and structure for the foundational Bearing Witness - Gaza document.",
+    "language": "en",
+    "content": {
+      "page_title": "The bigger picture",
+      "document_title": "Bearing Witness - Gaza Document",
+      "summary": "This document serves as the foundational, evolving archive of the reality in Gaza since October 7. It provides an extensive analytical and evidentiary breakdown of major events, structured through diverse methodologies and primary testimonies.",
+      "last_updated": "July 5, 2025",
+      "version": "v6.7.0",
+      "file_label": "full document file",
+      "source_pdf": "Gaza_English-v6.7.0-5.7.25 (2).pdf",
+      "previous_versions": [
+        "June 18, 2024",
+        "April 15, 2024",
+        "March 15, 2024",
+        "February 18, 2024",
+        "January 30, 2024",
+        "January 9, 2024"
+      ],
+      "sections": [
+        {"group": "Introduction", "number": "01", "title": "Summary", "last_updated": "November 29, 2024"},
+        {"group": "Introduction", "number": "02", "title": "Professional and Ethical Statement", "last_updated": "November 29, 2024"},
+        {"group": "Introduction", "number": "03", "title": "Preface", "last_updated": "November 29, 2024"},
+        {"group": "Main Chapters", "number": "04", "title": "The Massacre of Palestinians", "last_updated": "July 5, 2025"},
+        {"group": "Main Chapters", "number": "05", "title": "Causing Deaths of Civilian Populations", "last_updated": "June 18, 2024"},
+        {"group": "Main Chapters", "number": "06", "title": "Dehumanization", "last_updated": "June 18, 2024"},
+        {"group": "Main Chapters", "number": "07", "title": "Ethnic Cleansing", "last_updated": "June 18, 2024"},
+        {"group": "Main Chapters", "number": "08", "title": "Hostages", "last_updated": "March 9, 2025"},
+        {"group": "Main Chapters", "number": "09", "title": "The West Bank", "last_updated": "June 18, 2024"},
+        {"group": "Main Chapters", "number": "10", "title": "The Media and Propaganda", "last_updated": "June 18, 2024"},
+        {"group": "Main Chapters", "number": "11", "title": "US Involvement", "last_updated": "June 18, 2024"},
+        {"group": "Zoom In", "number": "01", "title": "Second raid of al-Shifa (March 2024)", "last_updated": "June 18, 2024"},
+        {"group": "Zoom In", "number": "02", "title": "US Campus Protests (April-May 2024)", "last_updated": "June 18, 2024"},
+        {"group": "Zoom In", "number": "03", "title": "North Gaza Operation (Oct.-Dec. 2024)", "last_updated": "December 5, 2024"},
+        {"group": "Appendices", "number": "01", "title": "Why Genocide?", "last_updated": "June 18, 2024"},
+        {"group": "Appendices", "number": "02", "title": "Methodology", "last_updated": "November 29, 2024"}
+      ]
+    }
+  },
+  {
+    "id": "author-and-document-about-he",
+    "kind": "author_document_metadata",
+    "title": "על המחבר ועל המסמך",
+    "description": "Hebrew metadata note about Lee Mordechai as author and the purpose of the document.",
+    "language": "he",
+    "content": "מסמך זה נכתב מתוך תחושת אחריות עמוקה ומחויבות להתמודדות עם המשבר ההומניטרי והפוליטי המתמשך ברצועת עזה. אני, לי מרדכי, היסטוריון העובד באוניברסיטה ישראלית ואזרח ישראלי, כתבתי אותו תוך שימוש במומחיות המקצועית שלי כהיסטוריון ומתוך מחויבות מוסרית לבחון ולתעד את האירועים המתגלגלים. על בסיס ניסיוני בביצוע מחקר קפדני וניתוח ביקורתי של מקורות, לקחתי על עצמי עבודה זו גם כאזרח המחויב להגיב לפעולות ממשלתו וגם כאקדמאי השואף להגן על זכויות אדם ועקרונות אתיים.\n\nמסמך זה נכתב מתוך אמונה כי שתיקה מול אי צדק אינה מתקבלת על הדעת. באווירה שבה קולות מחאה הם נדירים, המסמך שואף לשמש עדות לסבל האדיר המתרחש בשטח ולהציע תיאור מבוסס ראיות ושקיפות של הנעשה, כמיטב יכולתי. המסמך משקף את אמונתי בצורך לשלב בין מחקר מדויק ואחריות מוסרית לפעולה בעת התמודדות עם אירועים בעלי השלכות כה עמוקות על ההווה והעתיד במרחב שבין הירדן והים.\n\nהמסמך משמש בו בעת גם כהצהרה ציבורית וגם כאוסף של עדויות ועובדות. הוא שואף לעשות סדר במצב המורכב שלפתחנו. כתבתי את המסמך תוך כדי איסוף ראיות ממקורות מהימנים, כולל ארגוני סיוע הומניטרי, תחקירים ודו\"חות שונים, ועדויות ממקור ראשון, כדי להבין טוב יותר את הנעשה במלחמה ואת השפעותיה. במהותו, המסמך משמר תיעוד וסינתזה עבור אלו המחפשים להבין את המציאות לנגד הנרטיבים המנוגדים בשיח הציבורי.\n\nהמסמך כתוב בטון מדוד ועובדתי, ונמנע משפה רגשית כדי לתת לראיות לדבר בעד עצמן. באמצעות מסמך זה אני מקווה לתרום משהו לשיח הציבורי על המלחמה ולעודד קוראות וקוראים להתמודד באופן רציני עם ממדיה האנושיים וההיסטוריים.\n\nהמסמך הוא עבורי מעשה של עדות — שיקוף של מחויבותי לצדק, אחריות ואחריות אתית להבטיח שאירועי הימים האלו יסופרו וייזכרו. אני מזמין את הקוראות והקוראים לבחון באופן ביקורתי את הראיות ולשקול את השאלות המוסריות והפוליטיות שהמצב הנוכחי מעלה."
+  }
+]

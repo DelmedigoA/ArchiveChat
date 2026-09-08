@@ -15,6 +15,7 @@ from .collection import Collection
 from .documents import DOCUMENT_TEXT_PATH, DocumentCollection
 from .faqs import FAQ_PATH, FaqCollection
 from .graph import build_graph
+from .project_metadata import PROJECT_METADATA_PATH, ProjectMetadataCollection
 from .results import message_text
 from .web_tools import make_web_tools
 
@@ -34,6 +35,7 @@ def main():
     parser.add_argument('--faq-search-limit', type=int, default=int(os.getenv('ARCHIVECHAT_FAQ_SEARCH_LIMIT') or '5'))
     parser.add_argument('--document-text', type=Path, default=Path(os.getenv('ARCHIVECHAT_DOCUMENT_TEXT') or DOCUMENT_TEXT_PATH))
     parser.add_argument('--document-search-limit', type=int, default=int(os.getenv('ARCHIVECHAT_DOCUMENT_SEARCH_LIMIT') or '5'))
+    parser.add_argument('--project-metadata-file', type=Path, default=Path(os.getenv('ARCHIVECHAT_PROJECT_METADATA_FILE') or PROJECT_METADATA_PATH))
     parser.add_argument('--question', help='Ask one question and exit')
     args = parser.parse_args()
     if not args.model:
@@ -58,6 +60,7 @@ def main():
     collection = Collection(args.collection, embeddings=embeddings)
     faq_collection = FaqCollection(args.faq_file)
     document_collection = DocumentCollection(args.document_text, embeddings=embeddings) if args.document_text.exists() else None
+    project_metadata_collection = ProjectMetadataCollection(args.project_metadata_file) if args.project_metadata_file.exists() else None
     model_kwargs = {
         'model': args.model,
         'timeout': 60,
@@ -76,6 +79,7 @@ def main():
         faq_search_limit=args.faq_search_limit,
         document_collection=document_collection,
         document_search_limit=args.document_search_limit,
+        project_metadata_collection=project_metadata_collection,
     )
     messages = []
     while True:
