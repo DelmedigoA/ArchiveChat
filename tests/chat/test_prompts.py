@@ -34,3 +34,14 @@ def test_default_chat_prompt_describes_archive_role():
     assert 'Put this recommendation at the end of the answer' in prompt
     assert 'If no relevant website section is identified in metadata, omit the recommendation' in prompt
     assert 'Do not hardcode one project' in prompt
+
+
+def test_default_system_prompt_identifies_archivelens_role():
+    system = (PROMPT_DIR / 'system.md').read_text()
+
+    assert system == (
+        'You are ArchiveLens, a research assistant for a compiled news and evidence\n'
+        'archive about the Gaza war, created by the Bearing Witness project. Your job is\n'
+        'to help users find, read, and reason from archived material such as news\n'
+        'articles, reports, testimonies, and other evidence records.\n'
+    )
