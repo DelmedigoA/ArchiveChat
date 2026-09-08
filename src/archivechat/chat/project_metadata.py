@@ -8,7 +8,7 @@ PROJECT_METADATA_PATH = Path(__file__).resolve().parents[3] / 'data' / 'project-
 
 
 class ProjectMetadataCollection:
-    """Read project metadata records that describe the archive, document, and author context."""
+    """Read metadata records about the project, document, website crawl, and author context."""
 
     def __init__(self, path: Path = PROJECT_METADATA_PATH):
         self.path = path
@@ -24,6 +24,7 @@ class ProjectMetadataCollection:
                 'title': str(record['title']),
                 'description': str(record.get('description') or ''),
                 'language': str(record.get('language') or ''),
+                'source_url': str(record.get('source_url') or ''),
                 'content': record.get('content'),
             }
         if not self.records:
@@ -31,16 +32,22 @@ class ProjectMetadataCollection:
 
     def list_records(self) -> list[dict]:
         """List metadata records without returning full content."""
-        return [
-            {
+        listed = []
+        for record in self.records.values():
+            item = {
                 'record_id': record['record_id'],
                 'kind': record['kind'],
                 'title': record['title'],
                 'description': record['description'],
                 'language': record['language'],
             }
-            for record in self.records.values()
-        ]
+            if record['source_url']:
+                item['source_url'] = record['source_url']
+            crawled_at = record['content'].get('crawled_at') if isinstance(record['content'], dict) else None
+            if crawled_at:
+                item['crawled_at'] = str(crawled_at)
+            listed.append(item)
+        return listed
 
     def read(self, record_id: str) -> dict:
         """Read a project metadata record by ID."""

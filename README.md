@@ -159,9 +159,9 @@ up to ten candidates using BM25 across catalog metadata and article and social-t
 page at collection load time, then adds cosine similarity to the BM25 score. `read_item` returns the entire stored item
 without truncating its articles. Project metadata is separate: `list_project_metadata_records` returns available
 metadata records without their full content, and `read_project_metadata_record`
-returns the selected project/document/about record. The prompt labels project
-metadata and FAQ metadata as context about ArchiveLens and Bearing Witness, not
-evidence for claims about events in Gaza. FAQ metadata is separate:
+returns the selected project/document/about/website-navigation/sitemap-crawl
+record. The prompt labels project metadata and FAQ metadata as context about
+ArchiveLens and Bearing Witness, not evidence for claims about events in Gaza. FAQ metadata is separate:
 `search_faqs` searches only FAQ questions as level-1 metadata records, and
 `read_faq` returns the level-2 metadata answer for a selected FAQ. The Bearing
 Witness document is also separate:
@@ -170,8 +170,8 @@ Witness document is also separate:
 The prompt asks the model to read evidence before answering and cite original
 URLs or document page numbers; citation correctness is not yet enforced by a
 separate validator. Tool rounds are bounded. Live use sends questions, retrieved
-item material, FAQ answers, document pages, and embedded item text to the
-selected OpenAI APIs. With
+item material, FAQ answers, project metadata records, document pages, and embedded
+item text to the selected OpenAI APIs. With
 `--web-tools`, live use can also contact Wikipedia and user-provided HTTP or
 HTTPS URLs. Automated graph tests use scripted models, fake embeddings, and fake
 HTTP clients, so they need no API calls.

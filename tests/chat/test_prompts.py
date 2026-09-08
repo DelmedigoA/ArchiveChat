@@ -30,3 +30,4 @@ def test_default_chat_prompt_describes_archive_role():
     assert 'read the full items' in prompt
     assert 'Lee Mordechai' in prompt
     assert 'use the dedicated project metadata tools first' in prompt
+    assert 'sitemap/crawl inventory' in prompt
