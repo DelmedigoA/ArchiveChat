@@ -32,4 +32,5 @@ def test_default_chat_prompt_describes_archive_role():
     assert 'use the dedicated project metadata tools first' in prompt
     assert 'sitemap/crawl inventory' in prompt
     assert 'Put this recommendation at the end of the answer' in prompt
+    assert 'If no relevant website section is identified in metadata, omit the recommendation' in prompt
     assert 'Do not hardcode one project' in prompt

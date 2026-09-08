@@ -71,10 +71,13 @@ def test_default_project_metadata_contains_website_navigation_records():
     assert records['website-navigation-directory']['crawled_at'] == '2026-09-08'
     assert records['website-sitemap-inventory']['kind'] == 'website_sitemap_metadata'
     assert records['website-sitemap-inventory']['crawled_at'] == '2026-09-08'
-    assert any(
-        example['recommended_url'] == 'https://bearing-witness.com/destruction/'
-        for example in navigation['recommendation_examples']
+    destruction_example = next(
+        example for example in navigation['recommendation_examples']
+        if example['recommended_url'] == 'https://bearing-witness.com/destruction/'
     )
+    assert 'building damage' in destruction_example['user_interest']
+    assert 'built environment' in destruction_example['user_interest']
+    assert 'satellite-based damage assessment' in destruction_example['user_interest']
     assert any(
         item['url'] == 'https://www.instagram.com/bearingwitnessgaza/'
         for item in navigation['social_links']
