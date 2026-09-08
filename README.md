@@ -161,8 +161,11 @@ without truncating its articles. Project metadata is separate: `list_project_met
 metadata records without their full content, and `read_project_metadata_record`
 returns the selected project/document/about/website-navigation/sitemap-crawl
 record. The prompt labels project metadata and FAQ metadata as context about
-ArchiveLens and Bearing Witness, not evidence for claims about events in Gaza. FAQ metadata is separate:
-`search_faqs` searches only FAQ questions as level-1 metadata records, and
+ArchiveLens and Bearing Witness, not evidence for claims about events in Gaza.
+When a question maps to a public Bearing Witness website section, the prompt asks
+the model to use metadata to recommend that section at the end of the answer.
+FAQ metadata is separate: `search_faqs` searches only FAQ questions as level-1
+metadata records, and
 `read_faq` returns the level-2 metadata answer for a selected FAQ. The Bearing
 Witness document is also separate:
 `search_bearing_witness_document` searches page-level records, and

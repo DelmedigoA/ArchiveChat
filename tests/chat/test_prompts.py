@@ -31,3 +31,5 @@ def test_default_chat_prompt_describes_archive_role():
     assert 'Lee Mordechai' in prompt
     assert 'use the dedicated project metadata tools first' in prompt
     assert 'sitemap/crawl inventory' in prompt
+    assert 'Put this recommendation at the end of the answer' in prompt
+    assert 'Do not hardcode one project' in prompt

@@ -114,6 +114,7 @@ def _runtime_context(
         f'- Project FAQ metadata records available through dedicated FAQ tools: {faq_count}.\n'
         f'- Project metadata records available through dedicated metadata tools: {metadata_count}.\n'
         '- Project metadata is the first place to look for questions about ArchiveLens, Bearing Witness, the website, website navigation, sitemap/crawl inventory, the author Lee Mordechai, the About text, document identity, document structure, and version history.\n'
+        '- When a user asks about a topic that maps to a Bearing Witness website project, report, map, article hub, testimony section, archive search page, or other public section, use project metadata to identify that section and optionally recommend it at the end of the answer as navigation guidance.\n'
         '- FAQ metadata is for specific FAQ-style questions such as funding, submissions, languages, methodology, scope, reliability, media use, and site usage.\n'
         '- Project metadata and FAQ metadata are context, not evidence for claims about events in Gaza.\n'
         f'- Main Bearing Witness document: {document_title}; searchable page count: {document_pages}.\n'

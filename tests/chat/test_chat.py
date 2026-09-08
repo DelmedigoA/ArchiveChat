@@ -316,6 +316,7 @@ def test_runtime_context_counts_catalog_faq_document_and_metadata_records(tmp_pa
     assert 'Project metadata is the first place to look for questions about ArchiveLens' in content
     assert 'author Lee Mordechai' in content
     assert 'sitemap/crawl inventory' in content
+    assert 'recommend it at the end of the answer as navigation guidance' in content
     assert 'FAQ metadata is for specific FAQ-style questions' in content
     assert 'not evidence for claims about events in Gaza' in content
     assert 'Main Bearing Witness document: Bearing Witness Test Document; searchable page count: 3.' in content
