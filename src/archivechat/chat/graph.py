@@ -70,12 +70,12 @@ def build_graph(
     if faq_collection:
         @tool
         def search_faqs(query: str, limit: int = faq_search_limit) -> list[dict]:
-            """Find FAQ questions relevant to project context, methodology, scope, or usage."""
+            """Find FAQ metadata questions relevant to project context, methodology, scope, or usage."""
             return faq_collection.search(query, limit)
 
         @tool
         def read_faq(faq_id: str) -> dict:
-            """Read the full FAQ answer for a question returned by search_faqs."""
+            """Read the full FAQ metadata answer for a question returned by search_faqs."""
             return faq_collection.read(faq_id)
 
         tools.extend([search_faqs, read_faq])
@@ -111,9 +111,9 @@ def _runtime_context(
     return (
         'Runtime collection status:\n'
         f'- Available inspectable archive catalog records/items: {catalog_records} catalog records across {item_count} items.\n'
-        f'- Project FAQ records available through dedicated FAQ tools: {faq_count}.\n'
+        f'- Project FAQ metadata records available through dedicated FAQ tools: {faq_count}.\n'
         f'- Project metadata records available through dedicated metadata tools: {metadata_count}.\n'
-        '- Project metadata describes ArchiveLens, Bearing Witness, the document structure, version history, and author/about-document context; it is context, not evidence for claims about events in Gaza.\n'
+        '- Project metadata and FAQ metadata describe ArchiveLens, Bearing Witness, the document structure, version history, funding/scope/method answers, and author/about-document context; they are context, not evidence for claims about events in Gaza.\n'
         f'- Main Bearing Witness document: {document_title}; searchable page count: {document_pages}.\n'
         "- Treat the Bearing Witness document as the project's main analytical source.\n"
         '- This is a beta ArchiveLens build: most references cited inside the Bearing Witness document do not yet have inspectable archive items/catalog records available in this chat.\n'

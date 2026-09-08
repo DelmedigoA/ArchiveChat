@@ -51,7 +51,9 @@ def test_default_project_metadata_contains_document_and_hebrew_about_records():
 
     records = {record['record_id']: record for record in metadata.list_records()}
 
+    assert records['about-bearing-witness-gaza']['kind'] == 'project_about_metadata'
     assert records['document-record']['kind'] == 'document_metadata'
     assert records['author-and-document-about-he']['language'] == 'he'
+    assert 'open knowledge space' in metadata.read('about-bearing-witness-gaza')['content']
     assert metadata.read('document-record')['content']['version'] == 'v6.7.0'
     assert 'לי מרדכי' in metadata.read('author-and-document-about-he')['content']

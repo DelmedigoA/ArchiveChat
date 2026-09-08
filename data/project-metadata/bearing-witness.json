@@ -8,6 +8,15 @@
     "content": "Bearing Witness is an independent, grassroots, long-term testimonial initiative established to confront the ongoing humanitarian, political, and human crisis in the Gaza Strip through facts, context, and systematic, evidence-based documentation. The project is more than an archive: it builds a long-term knowledge infrastructure designed to enable future understanding of events as part of an ongoing historical, political, and human continuum."
   },
   {
+    "id": "about-bearing-witness-gaza",
+    "kind": "project_about_metadata",
+    "title": "About Bearing Witness: Gaza",
+    "description": "Full About text describing the project purpose, knowledge model, website metaphor, volunteers, and civic/historical responsibility.",
+    "language": "en",
+    "source_url": "https://bearing-witness.com/about/",
+    "content": "# About Bearing Witness: Gaza\n\nKnowledge, Context, and Historical Responsibility\n\nBearing Witness is an independent, grassroots, long-term testimonial initiative, established out of the urgent need to confront the ongoing humanitarian, political, and human crisis in the Gaza Strip through facts, context, and systematic, evidence-based documentation.\n\nIt is currently the only platform that consolidates and contextualizes a large body of relevant information concerning developments in Gaza, bringing together place, time, and context. The project is more than an archive: it builds a long-term knowledge infrastructure designed to enable future understanding of events as part of an ongoing historical, political, and human continuum.\n\nBearing Witness: Gaza cross-references firsthand testimonies, data, visual documentation, official statements, reports, and investigations from credible bodies, situating them along a clear spatial and temporal axis. This integrative approach makes it possible to identify not only discrete events, but also underlying trends unfolding in the background, such as:\n\n- Processes of dehumanization in public and political discourse\n- Ongoing discussions about the future of Gaza, including plans and proposals on multiple sides\n- The influence of US policy on the conduct of the war, international discourse, and operational boundaries\n\nBy connecting multiple layers of information, the project presents a nuanced picture that is not visible when information is dispersed, decontextualized, or presented as isolated and contradictory fragments.\n\nThis project is built on a core, research-based document entitled Bearing Witness – Gaza. Written by historian Dr. Lee Mordechai, the document was created utilizing rigorous research, critical analysis of sources, and cross-verification of evidence from wide-ranging, credible sources. The document serves as the analytical anchor and interpretive foundation of the entire Bearing Witness documentation project.\n\nThe website itself was designed as an open knowledge space, analogous to a museum. There is no single reading path, and no attempt to impose a closed interpretation. Visitors are invited to follow their curiosity and explore the materials freely. One may examine a single testimony, follow a timeline, observe recurring patterns, or move between different layers of documentation. This navigation experience enables constant movement between micro and macro perspectives: between personal stories, concrete findings, and specific details — and a broader overview of processes, contexts, and trends. In this way, a deep, cumulative, and evidence-based understanding emerges, one that does not rely on competing narratives or unverified information.\n\nThe project is largely sustained by the work of volunteers — Jewish and Palestinian citizens of Israel living in Israel and abroad — who operate out of a personal and civic commitment to systematic, precise, and responsible documentation. Project teams, including researchers, educators, technology professionals, writers, editors, and data specialists, collectively lead the processes of collection, documentation, analysis, and public dissemination of knowledge on the platform. The work is conducted in a collaborative and multidisciplinary format, enabling the project to function as an ongoing knowledge space grounded in collective responsibility.\n\nBearing Witness comes out of a civic, moral, and historical commitment: the understanding that silence in the face of large-scale harm to human rights and civilian life is not an option, and that there is a responsibility to document, preserve, and contextualize events with far-reaching implications for the present and future of the region between the Jordan River and the Mediterranean Sea. Bearing Witness collects testimony as an act of responsibility and activism. It makes an effort to ensure that the events, trends, and meanings of the current period are preserved as accessible, evidence-based knowledge, open to critical examination and meeting the need for deeper understanding.\n"
+  },
+  {
     "id": "document-record",
     "kind": "document_metadata",
     "title": "Bearing Witness - Gaza Document",
@@ -30,22 +39,102 @@
         "January 9, 2024"
       ],
       "sections": [
-        {"group": "Introduction", "number": "01", "title": "Summary", "last_updated": "November 29, 2024"},
-        {"group": "Introduction", "number": "02", "title": "Professional and Ethical Statement", "last_updated": "November 29, 2024"},
-        {"group": "Introduction", "number": "03", "title": "Preface", "last_updated": "November 29, 2024"},
-        {"group": "Main Chapters", "number": "04", "title": "The Massacre of Palestinians", "last_updated": "July 5, 2025"},
-        {"group": "Main Chapters", "number": "05", "title": "Causing Deaths of Civilian Populations", "last_updated": "June 18, 2024"},
-        {"group": "Main Chapters", "number": "06", "title": "Dehumanization", "last_updated": "June 18, 2024"},
-        {"group": "Main Chapters", "number": "07", "title": "Ethnic Cleansing", "last_updated": "June 18, 2024"},
-        {"group": "Main Chapters", "number": "08", "title": "Hostages", "last_updated": "March 9, 2025"},
-        {"group": "Main Chapters", "number": "09", "title": "The West Bank", "last_updated": "June 18, 2024"},
-        {"group": "Main Chapters", "number": "10", "title": "The Media and Propaganda", "last_updated": "June 18, 2024"},
-        {"group": "Main Chapters", "number": "11", "title": "US Involvement", "last_updated": "June 18, 2024"},
-        {"group": "Zoom In", "number": "01", "title": "Second raid of al-Shifa (March 2024)", "last_updated": "June 18, 2024"},
-        {"group": "Zoom In", "number": "02", "title": "US Campus Protests (April-May 2024)", "last_updated": "June 18, 2024"},
-        {"group": "Zoom In", "number": "03", "title": "North Gaza Operation (Oct.-Dec. 2024)", "last_updated": "December 5, 2024"},
-        {"group": "Appendices", "number": "01", "title": "Why Genocide?", "last_updated": "June 18, 2024"},
-        {"group": "Appendices", "number": "02", "title": "Methodology", "last_updated": "November 29, 2024"}
+        {
+          "group": "Introduction",
+          "number": "01",
+          "title": "Summary",
+          "last_updated": "November 29, 2024"
+        },
+        {
+          "group": "Introduction",
+          "number": "02",
+          "title": "Professional and Ethical Statement",
+          "last_updated": "November 29, 2024"
+        },
+        {
+          "group": "Introduction",
+          "number": "03",
+          "title": "Preface",
+          "last_updated": "November 29, 2024"
+        },
+        {
+          "group": "Main Chapters",
+          "number": "04",
+          "title": "The Massacre of Palestinians",
+          "last_updated": "July 5, 2025"
+        },
+        {
+          "group": "Main Chapters",
+          "number": "05",
+          "title": "Causing Deaths of Civilian Populations",
+          "last_updated": "June 18, 2024"
+        },
+        {
+          "group": "Main Chapters",
+          "number": "06",
+          "title": "Dehumanization",
+          "last_updated": "June 18, 2024"
+        },
+        {
+          "group": "Main Chapters",
+          "number": "07",
+          "title": "Ethnic Cleansing",
+          "last_updated": "June 18, 2024"
+        },
+        {
+          "group": "Main Chapters",
+          "number": "08",
+          "title": "Hostages",
+          "last_updated": "March 9, 2025"
+        },
+        {
+          "group": "Main Chapters",
+          "number": "09",
+          "title": "The West Bank",
+          "last_updated": "June 18, 2024"
+        },
+        {
+          "group": "Main Chapters",
+          "number": "10",
+          "title": "The Media and Propaganda",
+          "last_updated": "June 18, 2024"
+        },
+        {
+          "group": "Main Chapters",
+          "number": "11",
+          "title": "US Involvement",
+          "last_updated": "June 18, 2024"
+        },
+        {
+          "group": "Zoom In",
+          "number": "01",
+          "title": "Second raid of al-Shifa (March 2024)",
+          "last_updated": "June 18, 2024"
+        },
+        {
+          "group": "Zoom In",
+          "number": "02",
+          "title": "US Campus Protests (April-May 2024)",
+          "last_updated": "June 18, 2024"
+        },
+        {
+          "group": "Zoom In",
+          "number": "03",
+          "title": "North Gaza Operation (Oct.-Dec. 2024)",
+          "last_updated": "December 5, 2024"
+        },
+        {
+          "group": "Appendices",
+          "number": "01",
+          "title": "Why Genocide?",
+          "last_updated": "June 18, 2024"
+        },
+        {
+          "group": "Appendices",
+          "number": "02",
+          "title": "Methodology",
+          "last_updated": "November 29, 2024"
+        }
       ]
     }
   },
