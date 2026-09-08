@@ -67,14 +67,28 @@ def test_static_ui_uses_streaming_chat_endpoint_and_statuses():
     assert 'function parseServerSentEvent' in app_js
     assert 'function handleStreamEvent' in app_js
     assert 'Working…' in app_js
-    assert 'els.status.dataset.state = value ? "busy" : "ready"' in app_js
+    assert 'function updateStreamingStatus' in app_js
+    assert 'message-status' in app_js
+    assert 'els.status.textContent = "Ready"' in app_js
+    assert 'els.status.dataset.state' not in app_js
     assert 'Thinking' not in app_js
     assert 'Reading your question' not in app_js
 
 
 
-def test_status_pill_has_active_indicator():
+def test_streaming_message_has_active_indicator():
     styles = STATIC_CSS.read_text()
 
-    assert '.status-pill[data-state="busy"]::before' in styles
+    assert '.message-status::before' in styles
+    assert '.status-pill[data-state="busy"]::before' not in styles
     assert '@keyframes status-pulse' in styles
+
+
+
+def test_streaming_status_renders_inside_message_not_header():
+    app_js = STATIC_APP.read_text()
+
+    assert 'updateStreamingStatus(streamNode, event.data.message || "Working…")' in app_js
+    assert 'node.innerHTML = `<span class="message-status">${escapeHtml(message)}</span>`;' in app_js
+    assert 'node.dataset.hasAnswerText === "true"' in app_js
+    assert 'els.status.textContent = event.data.message' not in app_js

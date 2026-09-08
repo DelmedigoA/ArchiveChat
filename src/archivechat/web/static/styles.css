@@ -147,28 +147,6 @@ textarea {
   white-space: nowrap;
 }
 
-.status-pill[data-state="busy"]::before {
-  content: "";
-  display: inline-block;
-  width: 7px;
-  height: 7px;
-  margin-right: 7px;
-  border-radius: 999px;
-  background: var(--accent);
-  animation: status-pulse 1.1s ease-in-out infinite;
-}
-
-@keyframes status-pulse {
-  0%, 100% {
-    opacity: 0.35;
-    transform: scale(0.82);
-  }
-
-  50% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
 
 .messages {
   display: grid;
@@ -207,6 +185,35 @@ textarea {
   justify-self: start;
   background: var(--assistant);
   color: var(--ink);
+}
+
+.message-status {
+  display: inline-flex;
+  align-items: center;
+  color: var(--muted);
+}
+
+.message-status::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 8px;
+  border-radius: 999px;
+  background: var(--accent);
+  animation: status-pulse 1.1s ease-in-out infinite;
+}
+
+@keyframes status-pulse {
+  0%, 100% {
+    opacity: 0.35;
+    transform: scale(0.82);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .message a {

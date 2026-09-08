@@ -98,8 +98,7 @@ async function ask(question) {
 
 function setBusy(value) {
   state.busy = value;
-  els.status.textContent = value ? "Working…" : "Ready";
-  els.status.dataset.state = value ? "busy" : "ready";
+  els.status.textContent = "Ready";
   els.composer.querySelector("button").disabled = value;
 }
 
@@ -142,8 +141,7 @@ function parseServerSentEvent(text) {
 
 function handleStreamEvent(event, streamNode) {
   if (event.event === "status") {
-    els.status.textContent = event.data.message || "Working…";
-    els.status.dataset.state = "busy";
+    updateStreamingStatus(streamNode, event.data.message || "Working…");
   } else if (event.event === "delta") {
     appendStreamingText(streamNode, event.data.text || "");
   } else if (event.event === "final") {
@@ -176,19 +174,33 @@ function appendAssistantMessage(answer, items) {
 function appendStreamingAssistantMessage() {
   const node = document.createElement("article");
   node.className = "message message--assistant message--streaming";
-  node.textContent = "";
+  node.dataset.hasAnswerText = "false";
+  updateStreamingStatus(node, "Working…");
   els.messages.appendChild(node);
   node.scrollIntoView({ block: "end" });
   return node;
 }
 
+function updateStreamingStatus(node, message) {
+  if (node.dataset.hasAnswerText === "true") {
+    return;
+  }
+  node.innerHTML = `<span class="message-status">${escapeHtml(message)}</span>`;
+  node.scrollIntoView({ block: "end" });
+}
+
 function appendStreamingText(node, text) {
+  if (node.dataset.hasAnswerText !== "true") {
+    node.dataset.hasAnswerText = "true";
+    node.textContent = "";
+  }
   node.textContent += text;
   node.scrollIntoView({ block: "end" });
 }
 
 function replaceWithAssistantMessage(node, answer, items) {
   node.classList.remove("message--streaming");
+  delete node.dataset.hasAnswerText;
   node.innerHTML = renderAnswer(answer, items);
   node.scrollIntoView({ block: "end" });
 }
