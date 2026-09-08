@@ -28,3 +28,5 @@ def test_default_chat_prompt_describes_archive_role():
     assert 'Gaza war' in prompt
     assert 'Bearing Witness' in prompt
     assert 'read the full items' in prompt
+    assert 'Lee Mordechai' in prompt
+    assert 'use the dedicated project metadata tools first' in prompt

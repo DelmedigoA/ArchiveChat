@@ -46,12 +46,12 @@ def build_graph(
     if project_metadata_collection:
         @tool
         def list_project_metadata_records() -> list[dict]:
-            """List project-level metadata records. These describe the project/document; they are not event evidence."""
+            """List project metadata records for ArchiveLens/Bearing Witness, including About, author, document, and version context. These are not event evidence."""
             return project_metadata_collection.list_records()
 
         @tool
         def read_project_metadata_record(record_id: str) -> dict:
-            """Read a project-level metadata record. Use for ArchiveLens/Bearing Witness context, not event evidence."""
+            """Read a project metadata record. Use first for project, website, author, Lee Mordechai, About, document, and version questions; not event evidence."""
             return project_metadata_collection.read(record_id)
 
         tools.extend([list_project_metadata_records, read_project_metadata_record])
@@ -113,7 +113,9 @@ def _runtime_context(
         f'- Available inspectable archive catalog records/items: {catalog_records} catalog records across {item_count} items.\n'
         f'- Project FAQ metadata records available through dedicated FAQ tools: {faq_count}.\n'
         f'- Project metadata records available through dedicated metadata tools: {metadata_count}.\n'
-        '- Project metadata and FAQ metadata describe ArchiveLens, Bearing Witness, the document structure, version history, funding/scope/method answers, and author/about-document context; they are context, not evidence for claims about events in Gaza.\n'
+        '- Project metadata is the first place to look for questions about ArchiveLens, Bearing Witness, the website, the author Lee Mordechai, the About text, document identity, document structure, and version history.\n'
+        '- FAQ metadata is for specific FAQ-style questions such as funding, submissions, languages, methodology, scope, reliability, media use, and site usage.\n'
+        '- Project metadata and FAQ metadata are context, not evidence for claims about events in Gaza.\n'
         f'- Main Bearing Witness document: {document_title}; searchable page count: {document_pages}.\n'
         "- Treat the Bearing Witness document as the project's main analytical source.\n"
         '- This is a beta ArchiveLens build: most references cited inside the Bearing Witness document do not yet have inspectable archive items/catalog records available in this chat.\n'
