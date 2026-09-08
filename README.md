@@ -163,7 +163,7 @@ returns the selected project/document/about/website-navigation/sitemap-crawl
 record. The prompt labels project metadata and FAQ metadata as context about
 ArchiveLens and Bearing Witness, not evidence for claims about events in Gaza.
 When a question maps to a public Bearing Witness website section, the prompt asks
-the model to use metadata to recommend that section at the end of the answer.
+the model to use metadata to recommend that section at the end of the answer, using a Markdown link when metadata provides a URL.
 FAQ metadata is separate: `search_faqs` searches only FAQ questions as level-1
 metadata records, and
 `read_faq` returns the level-2 metadata answer for a selected FAQ. The Bearing

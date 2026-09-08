@@ -34,6 +34,7 @@ def test_default_chat_prompt_describes_archive_role():
     assert 'Put this recommendation at the end of the answer' in prompt
     assert 'If no relevant website section is identified in metadata, omit the recommendation' in prompt
     assert 'Do not hardcode one project' in prompt
+    assert 'Use a Markdown link with the section title when metadata provides a URL' in prompt
 
 
 def test_default_system_prompt_identifies_archivelens_role():
