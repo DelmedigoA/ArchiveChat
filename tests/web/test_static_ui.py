@@ -55,3 +55,26 @@ def test_opening_sentence_is_randomized_on_page_load():
     assert 'What would you like to understand from the archive?' not in app_js
     assert 'Ask a question about the archive, the document, or the evidence.' in app_js
     assert 'Start with a question about what happened, how it was documented, or what the sources show.' in app_js
+
+
+
+def test_static_ui_uses_streaming_chat_endpoint_and_statuses():
+    app_js = STATIC_APP.read_text()
+
+    assert '/api/chat/stream' in app_js
+    assert 'Accept: "text/event-stream"' in app_js
+    assert 'function readChatStream' in app_js
+    assert 'function parseServerSentEvent' in app_js
+    assert 'function handleStreamEvent' in app_js
+    assert 'Working…' in app_js
+    assert 'els.status.dataset.state = value ? "busy" : "ready"' in app_js
+    assert 'Thinking' not in app_js
+    assert 'Reading your question' not in app_js
+
+
+
+def test_status_pill_has_active_indicator():
+    styles = STATIC_CSS.read_text()
+
+    assert '.status-pill[data-state="busy"]::before' in styles
+    assert '@keyframes status-pulse' in styles

@@ -1,12 +1,13 @@
 """Starlette app for the local ArchiveLens web UI."""
 
+import json
 from pathlib import Path
-from typing import Any
+from typing import Any, AsyncIterator
 
 from langchain_core.messages import HumanMessage
 from starlette.applications import Starlette
 from starlette.requests import Request
-from starlette.responses import FileResponse, JSONResponse
+from starlette.responses import FileResponse, JSONResponse, StreamingResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
@@ -14,6 +15,55 @@ from archivechat.chat.results import extract_read_items, item_summary, message_t
 
 
 STATIC_DIR = Path(__file__).with_name('static')
+
+
+TOOL_STATUS = {
+    'search_items': 'Searching the archive…',
+    'read_item': 'Reading archive records…',
+    'search_bearing_witness_document': 'Searching the Bearing Witness document…',
+    'read_bearing_witness_pages': 'Reading document pages…',
+    'list_project_metadata_records': 'Checking project context…',
+    'read_project_metadata_record': 'Checking project context…',
+    'search_faqs': 'Checking FAQ metadata…',
+    'read_faq': 'Checking FAQ metadata…',
+    'search_wikipedia': 'Checking public web context…',
+    'read_wikipedia_summary': 'Checking public web context…',
+    'fetch_web_page_text': 'Checking public web context…',
+}
+
+
+def sse(event: str, payload: dict[str, Any]) -> str:
+    return f"event: {event}\ndata: {json.dumps(payload, ensure_ascii=False)}\n\n"
+
+
+def chunk_text(chunk: Any) -> str:
+    content = getattr(chunk, 'content', None)
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        text_blocks = [
+            block['text']
+            for block in content
+            if isinstance(block, dict)
+            and block.get('type') in {'text', 'output_text'}
+            and isinstance(block.get('text'), str)
+        ]
+        return ''.join(text_blocks)
+    return ''
+
+
+def final_payload(result_messages: list[Any]) -> dict[str, Any]:
+    return {
+        'answer': message_text(result_messages[-1].content),
+        'items': [item_summary(item) for item in extract_read_items(result_messages)],
+    }
+
+
+def result_messages_from_event(event: dict[str, Any]) -> list[Any] | None:
+    output = event.get('data', {}).get('output')
+    if isinstance(output, dict) and isinstance(output.get('messages'), list) and output['messages']:
+        return output['messages']
+    return None
 
 
 def create_app(graph: Any, initial_messages: list[Any] | None = None, static_dir: Path | None = STATIC_DIR) -> Starlette:
@@ -36,15 +86,59 @@ def create_app(graph: Any, initial_messages: list[Any] | None = None, static_dir
 
         result_messages = result['messages']
         messages[:] = result_messages
-        read_items = [item_summary(item) for item in extract_read_items(result_messages)]
-        return JSONResponse({
-            'answer': message_text(result_messages[-1].content),
-            'items': read_items,
-        })
+        return JSONResponse(final_payload(result_messages))
+
+    async def chat_stream(request: Request):
+        payload = await request.json()
+        question = str(payload.get('question') or '').strip()
+        if not question:
+            return JSONResponse({'error': 'Question is required'}, status_code=400)
+
+        async def events() -> AsyncIterator[str]:
+            final_messages = None
+            emitted_text = False
+            last_status = None
+            try:
+                last_status = 'Working…'
+                yield sse('status', {'message': last_status})
+                async for event in graph.astream_events(
+                    {'messages': [*messages, HumanMessage(content=question)]},
+                    {'recursion_limit': 25},
+                    version='v2',
+                ):
+                    event_type = event.get('event')
+                    name = event.get('name')
+                    if event_type == 'on_tool_start' and name in TOOL_STATUS:
+                        status = TOOL_STATUS[name]
+                        if status != last_status:
+                            last_status = status
+                            yield sse('status', {'message': status, 'tool': name})
+                    elif event_type == 'on_chat_model_stream':
+                        text = chunk_text(event.get('data', {}).get('chunk'))
+                        if text:
+                            emitted_text = True
+                            if last_status != 'Writing answer…':
+                                last_status = 'Writing answer…'
+                                yield sse('status', {'message': last_status})
+                            yield sse('delta', {'text': text})
+                    maybe_messages = result_messages_from_event(event)
+                    if maybe_messages:
+                        final_messages = maybe_messages
+
+                if final_messages is None:
+                    raise RuntimeError('Streaming completed without final graph messages')
+                messages[:] = final_messages
+                yield sse('final', {**final_payload(final_messages), 'replace': emitted_text})
+                yield sse('done', {})
+            except Exception as exc:
+                yield sse('error', {'message': 'Chat failed', 'detail': str(exc)})
+
+        return StreamingResponse(events(), media_type='text/event-stream')
 
     routes = [
         Route('/', index),
         Route('/api/chat', chat, methods=['POST']),
+        Route('/api/chat/stream', chat_stream, methods=['POST']),
     ]
     if static_dir is not None:
         routes.append(Mount('/static', StaticFiles(directory=static_dir), name='static'))

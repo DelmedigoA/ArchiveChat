@@ -71,22 +71,25 @@ appendMessage("assistant", openingSentences[Math.floor(Math.random() * openingSe
 
 async function ask(question) {
   setBusy(true);
+  const streamNode = appendStreamingAssistantMessage();
   try {
-    const response = await fetch("/api/chat", {
+    const response = await fetch("/api/chat/stream", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "text/event-stream",
+      },
       body: JSON.stringify({ question }),
     });
-    const payload = await response.json();
-    if (!response.ok) {
+    if (!response.ok || !response.body) {
+      const payload = await response.json().catch(() => ({}));
+      streamNode.remove();
       appendMessage("assistant", payload.detail || payload.error || "Chat failed.");
       return;
     }
-    for (const item of payload.items || []) {
-      state.items.set(item.item_id, item);
-    }
-    appendAssistantMessage(payload.answer || "", payload.items || []);
+    await readChatStream(response.body, streamNode);
   } catch (error) {
+    streamNode.remove();
     appendMessage("assistant", `Request failed: ${error.message}`);
   } finally {
     setBusy(false);
@@ -95,8 +98,63 @@ async function ask(question) {
 
 function setBusy(value) {
   state.busy = value;
-  els.status.textContent = value ? "Thinking" : "Ready";
+  els.status.textContent = value ? "Working…" : "Ready";
+  els.status.dataset.state = value ? "busy" : "ready";
   els.composer.querySelector("button").disabled = value;
+}
+
+async function readChatStream(body, streamNode) {
+  const reader = body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) {
+      break;
+    }
+    buffer += decoder.decode(value, { stream: true });
+    const events = buffer.split("\n\n");
+    buffer = events.pop() || "";
+    for (const eventText of events) {
+      handleStreamEvent(parseServerSentEvent(eventText), streamNode);
+    }
+  }
+  if (buffer.trim()) {
+    handleStreamEvent(parseServerSentEvent(buffer), streamNode);
+  }
+}
+
+function parseServerSentEvent(text) {
+  const event = { event: "message", data: {} };
+  const dataLines = [];
+  for (const line of text.split("\n")) {
+    if (line.startsWith("event: ")) {
+      event.event = line.slice(7).trim();
+    } else if (line.startsWith("data: ")) {
+      dataLines.push(line.slice(6));
+    }
+  }
+  if (dataLines.length) {
+    event.data = JSON.parse(dataLines.join("\n"));
+  }
+  return event;
+}
+
+function handleStreamEvent(event, streamNode) {
+  if (event.event === "status") {
+    els.status.textContent = event.data.message || "Working…";
+    els.status.dataset.state = "busy";
+  } else if (event.event === "delta") {
+    appendStreamingText(streamNode, event.data.text || "");
+  } else if (event.event === "final") {
+    for (const item of event.data.items || []) {
+      state.items.set(item.item_id, item);
+    }
+    replaceWithAssistantMessage(streamNode, event.data.answer || "", event.data.items || []);
+  } else if (event.event === "error") {
+    streamNode.remove();
+    appendMessage("assistant", event.data.detail || event.data.message || "Chat failed.");
+  }
 }
 
 function appendMessage(role, text) {
@@ -112,6 +170,26 @@ function appendAssistantMessage(answer, items) {
   node.className = "message message--assistant";
   node.innerHTML = renderAnswer(answer, items);
   els.messages.appendChild(node);
+  node.scrollIntoView({ block: "end" });
+}
+
+function appendStreamingAssistantMessage() {
+  const node = document.createElement("article");
+  node.className = "message message--assistant message--streaming";
+  node.textContent = "";
+  els.messages.appendChild(node);
+  node.scrollIntoView({ block: "end" });
+  return node;
+}
+
+function appendStreamingText(node, text) {
+  node.textContent += text;
+  node.scrollIntoView({ block: "end" });
+}
+
+function replaceWithAssistantMessage(node, answer, items) {
+  node.classList.remove("message--streaming");
+  node.innerHTML = renderAnswer(answer, items);
   node.scrollIntoView({ block: "end" });
 }
 
