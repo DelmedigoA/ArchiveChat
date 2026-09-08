@@ -37,3 +37,11 @@ def test_bearing_witness_fonts_are_loaded():
     assert 'IBM+Plex+Sans' in index
     assert '--font-heading: "IBM Plex Sans"' in styles
     assert '--font-body: "Figtree"' in styles
+
+
+def test_enter_submits_and_shift_enter_keeps_multiline_input():
+    app_js = STATIC_APP.read_text()
+
+    assert 'event.key === "Enter" && !event.shiftKey' in app_js
+    assert 'event.preventDefault()' in app_js
+    assert 'els.composer.requestSubmit()' in app_js

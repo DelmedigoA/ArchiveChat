@@ -25,7 +25,8 @@ els.composer.addEventListener("submit", async (event) => {
 });
 
 els.question.addEventListener("keydown", (event) => {
-  if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
+  if (event.key === "Enter" && !event.shiftKey) {
+    event.preventDefault();
     els.composer.requestSubmit();
   }
 });
