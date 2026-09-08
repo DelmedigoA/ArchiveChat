@@ -141,7 +141,7 @@ function parseServerSentEvent(text) {
 
 function handleStreamEvent(event, streamState) {
   if (event.event === "status") {
-    updateStreamingStatus(streamState, event.data.message || "Working…");
+    updateStreamingStatus(streamState, event.data.message || "Reviewing material…");
   } else if (event.event === "item") {
     addStreamItem(streamState, event.data.item);
   } else if (event.event === "delta") {
@@ -183,7 +183,7 @@ function createStreamState() {
     itemIds: new Set(),
     hasAnswerText: false,
   };
-  updateStreamingStatus(streamState, "Working…");
+  updateStreamingStatus(streamState, "Reviewing material…");
   els.messages.appendChild(node);
   node.scrollIntoView({ block: "end" });
   return streamState;

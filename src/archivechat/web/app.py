@@ -117,7 +117,7 @@ def create_app(graph: Any, initial_messages: list[Any] | None = None, static_dir
             emitted_item_ids = set()
             last_status = None
             try:
-                last_status = 'Working…'
+                last_status = 'Reviewing material…'
                 yield sse('status', {'message': last_status})
                 async for event in graph.astream_events(
                     {'messages': [*messages, HumanMessage(content=question)]},
