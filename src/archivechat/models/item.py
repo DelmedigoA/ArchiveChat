@@ -1,10 +1,14 @@
 """The archival unit returned by item discovery."""
 
+from typing import Annotated
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from ..catalog import CatalogRecord
+from .content import ArticleContent, SocialThreadContent
+
+Content = Annotated[ArticleContent | SocialThreadContent, Field(discriminator='kind')]
 
 
 class Item(BaseModel):
@@ -15,3 +19,4 @@ class Item(BaseModel):
 
     id: UUID
     catalog_record: CatalogRecord | None = None
+    contents: list[Content] = Field(default_factory=list)

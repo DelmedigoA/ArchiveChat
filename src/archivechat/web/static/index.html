@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ask the archive · Bearing Witness</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="bw-header">
+        <a href="https://bearing-witness.com/" target="_blank" rel="noopener noreferrer" aria-label="Bearing Witness home">
+          <img src="https://bearing-witness.com/wp-content/themes/neve-bearing-witness/assets/img/bw-logo.png" alt="Bearing Witness" />
+        </a>
+        <a class="bw-back" href="https://bearing-witness.com/" target="_blank" rel="noopener noreferrer">Back to the project ↗</a>
+      </header>
+
+      <section class="intro" aria-labelledby="page-title">
+        <div class="kicker">BEARING WITNESS / EVIDENCE</div>
+        <h1 id="page-title">Ask the archive</h1>
+      </section>
+
+      <section class="chat-panel" aria-label="Archive chat">
+        <header class="chat-header">
+          <div>
+            <h2>Conversation</h2>
+            <p>Searches, reads, and cites archive items.</p>
+          </div>
+          <span class="status-pill" id="status">Ready</span>
+        </header>
+        <div class="messages" id="messages"></div>
+        <form class="composer" id="composer">
+          <textarea id="question" rows="2" placeholder="Ask a question about the archive…" required></textarea>
+          <button type="submit">Ask</button>
+        </form>
+      </section>
+
+      <p class="note">
+        Based on the local archive collection. AI-generated answers may contain errors;
+        check the cited item records and original URLs.
+      </p>
+    </main>
+    <script src="/static/app.js"></script>
+  </body>
+</html>

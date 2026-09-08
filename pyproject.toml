@@ -5,9 +5,16 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "httpx>=0.28.1",
+    "langchain-openai>=1.6.1",
+    "langgraph>=1.2.11",
+    "langsmith>=0.12.2",
     "pydantic>=2.13.5",
     "pydantic-ai>=2.40.0",
     "pytest>=9.1.1",
+    "python-dotenv>=1.2.3",
+    "starlette>=1.6.0",
+    "uvicorn>=0.52.4",
 ]
 
 [tool.pytest.ini_options]
