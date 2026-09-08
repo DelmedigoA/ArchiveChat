@@ -104,3 +104,11 @@ def test_streaming_answer_rerenders_markdown_live():
     assert 'renderAnswer(streamState.rawAnswer, streamState.items)' in app_js
     assert 'event.event === "item"' in app_js
     assert 'addStreamItem(streamState, event.data.item)' in app_js
+
+
+
+def test_status_updates_do_not_scroll_the_page():
+    app_js = STATIC_APP.read_text()
+    status_function = app_js.split('function updateStreamingStatus', 1)[1].split('function addStreamItem', 1)[0]
+
+    assert 'scrollIntoView' not in status_function

@@ -194,7 +194,6 @@ function updateStreamingStatus(streamState, message) {
     return;
   }
   streamState.node.innerHTML = `<span class="message-status">${escapeHtml(message)}</span>`;
-  streamState.node.scrollIntoView({ block: "end" });
 }
 
 function addStreamItem(streamState, item) {
