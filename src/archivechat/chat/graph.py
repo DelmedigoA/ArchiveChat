@@ -6,6 +6,7 @@ from langgraph.graph import START, MessagesState, StateGraph
 from langgraph.prebuilt import ToolNode, tools_condition
 
 from .collection import Collection
+from .documents import DocumentCollection
 from .faqs import FaqCollection
 from .prompts import load_chat_prompt
 
@@ -18,12 +19,16 @@ def build_graph(
     extra_tools: list[BaseTool] | None = None,
     faq_collection: FaqCollection | None = None,
     faq_search_limit: int = 5,
+    document_collection: DocumentCollection | None = None,
+    document_search_limit: int = 5,
 ):
     prompt = prompt or load_chat_prompt()
     if search_limit < 1:
         raise ValueError('search_limit must be at least 1')
     if faq_search_limit < 1:
         raise ValueError('faq_search_limit must be at least 1')
+    if document_search_limit < 1:
+        raise ValueError('document_search_limit must be at least 1')
 
     @tool
     def search_items(query: str, limit: int = search_limit) -> list[dict]:
@@ -36,6 +41,18 @@ def build_graph(
         return collection.read(item_id)
 
     tools = [search_items, read_item]
+    if document_collection:
+        @tool
+        def search_bearing_witness_document(query: str, limit: int = document_search_limit) -> list[dict]:
+            """Find matching pages in the Bearing Witness Gaza document. Returns page matches, not full text."""
+            return document_collection.search(query, limit)
+
+        @tool
+        def read_bearing_witness_pages(start_page: int, end_page: int | None = None) -> dict:
+            """Read full text from selected Bearing Witness document pages."""
+            return document_collection.read_pages(start_page, end_page)
+
+        tools.extend([search_bearing_witness_document, read_bearing_witness_pages])
     if faq_collection:
         @tool
         def search_faqs(query: str, limit: int = faq_search_limit) -> list[dict]:

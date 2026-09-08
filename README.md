@@ -61,7 +61,9 @@ those with `ARCHIVECHAT_MODEL`, `ARCHIVECHAT_REASONING_EFFORT`,
 Search returns up to ten item candidates by default; override that with
 `ARCHIVECHAT_SEARCH_LIMIT` or `--search-limit`. FAQ search returns up to five
 questions by default; override that with `ARCHIVECHAT_FAQ_SEARCH_LIMIT` or
-`--faq-search-limit`. Reasoning runs through OpenAI's
+`--faq-search-limit`. Bearing Witness document search returns up to five page
+matches by default; override that with `ARCHIVECHAT_DOCUMENT_SEARCH_LIMIT` or
+`--document-search-limit`. Reasoning runs through OpenAI's
 Responses API; pass `--reasoning-effort none` to disable reasoning. Run:
 
 ```sh
@@ -81,6 +83,8 @@ PYTHONPATH=src uv run python -m archivechat.chat \
   --search-limit 10 \
   --faq-file data/faqs/bearing-witness/faq.json \
   --faq-search-limit 5 \
+  --document-text data/documents/bearing-witness/gaza-english-v6.7.0.txt \
+  --document-search-limit 5 \
   --semantic-search \
   --embedding-model text-embedding-3-small \
   --web-tools
@@ -103,6 +107,8 @@ PYTHONPATH=src uv run python -m archivechat.web \
   --search-limit 10 \
   --faq-file data/faqs/bearing-witness/faq.json \
   --faq-search-limit 5 \
+  --document-text data/documents/bearing-witness/gaza-english-v6.7.0.txt \
+  --document-search-limit 5 \
   --semantic-search \
   --embedding-model text-embedding-3-small \
   --web-tools \
@@ -149,10 +155,14 @@ up to ten candidates using BM25 across catalog metadata and article and social-t
 cosine similarity to the BM25 score. `read_item` returns the entire stored item
 without truncating its articles. FAQ context is separate: `search_faqs` searches
 only FAQ questions as level-1 records, and `read_faq` returns the level-2 answer
-for a selected FAQ. The prompt asks the model to read evidence before answering
-and cite original URLs; citation correctness is not yet enforced by a separate
-validator. Tool rounds are bounded. Live use sends questions, retrieved item
-material, FAQ answers, and embedded item text to the selected OpenAI APIs. With
+for a selected FAQ. The Bearing Witness document is also separate:
+`search_bearing_witness_document` searches page-level records, and
+`read_bearing_witness_pages` returns the level-2 full text for selected pages.
+The prompt asks the model to read evidence before answering and cite original
+URLs or document page numbers; citation correctness is not yet enforced by a
+separate validator. Tool rounds are bounded. Live use sends questions, retrieved
+item material, FAQ answers, document pages, and embedded item text to the
+selected OpenAI APIs. With
 `--web-tools`, live use can also contact Wikipedia and user-provided HTTP or
 HTTPS URLs. Automated graph tests use scripted models, fake embeddings, and fake
 HTTP clients, so they need no API calls.

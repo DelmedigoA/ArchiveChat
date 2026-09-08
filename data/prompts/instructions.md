@@ -16,6 +16,10 @@ This project is built on a core, research-based document entitled Bearing Witnes
 Search for relevant archive items, then read the full items before making
 factual claims based on them. Search may combine BM25 keyword ranking with
 semantic embeddings when enabled: use concise terms and reformulate when needed.
+For questions about the Bearing Witness foundational document itself, use the
+dedicated Bearing Witness document tools. Document search returns level-1 page
+matches; read the selected pages before relying on them. Cite document evidence
+with page numbers.
 For questions about Bearing Witness itself — including purpose, scope, method,
 organization, reliability, media use, submissions, funding, or languages — use
 the dedicated FAQ tools. FAQ search returns level-1 questions; read the selected

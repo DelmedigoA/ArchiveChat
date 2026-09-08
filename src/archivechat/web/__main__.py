@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 
 from archivechat.chat.collection import Collection
+from archivechat.chat.documents import DOCUMENT_TEXT_PATH, DocumentCollection
 from archivechat.chat.faqs import FAQ_PATH, FaqCollection
 from archivechat.chat.graph import build_graph
 from archivechat.chat.web_tools import make_web_tools
@@ -29,6 +30,8 @@ def main():
     parser.add_argument('--web-tools', action='store_true', default=os.getenv('ARCHIVECHAT_WEB_TOOLS') == 'true')
     parser.add_argument('--faq-file', type=Path, default=Path(os.getenv('ARCHIVECHAT_FAQ_FILE') or FAQ_PATH))
     parser.add_argument('--faq-search-limit', type=int, default=int(os.getenv('ARCHIVECHAT_FAQ_SEARCH_LIMIT') or '5'))
+    parser.add_argument('--document-text', type=Path, default=Path(os.getenv('ARCHIVECHAT_DOCUMENT_TEXT') or DOCUMENT_TEXT_PATH))
+    parser.add_argument('--document-search-limit', type=int, default=int(os.getenv('ARCHIVECHAT_DOCUMENT_SEARCH_LIMIT') or '5'))
     parser.add_argument('--host', default='127.0.0.1')
     parser.add_argument('--port', type=int, default=8765)
     args = parser.parse_args()
@@ -37,6 +40,8 @@ def main():
         parser.error('--search-limit must be at least 1')
     if args.faq_search_limit < 1:
         parser.error('--faq-search-limit must be at least 1')
+    if args.document_search_limit < 1:
+        parser.error('--document-search-limit must be at least 1')
     if not os.getenv('OPENAI_API_KEY'):
         parser.error('Set OPENAI_API_KEY in your environment or .env')
 
@@ -45,6 +50,7 @@ def main():
         embeddings = OpenAIEmbeddings(model=args.embedding_model, timeout=60, max_retries=1)
     collection = Collection(args.collection, embeddings=embeddings)
     faq_collection = FaqCollection(args.faq_file)
+    document_collection = DocumentCollection(args.document_text) if args.document_text.exists() else None
     model_kwargs = {
         'model': args.model,
         'timeout': 60,
@@ -61,6 +67,8 @@ def main():
         extra_tools=make_web_tools() if args.web_tools else None,
         faq_collection=faq_collection,
         faq_search_limit=args.faq_search_limit,
+        document_collection=document_collection,
+        document_search_limit=args.document_search_limit,
     )
     uvicorn.run(create_app(graph), host=args.host, port=args.port)
 
