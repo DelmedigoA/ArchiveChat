@@ -53,7 +53,7 @@ def test_wikipedia_search_tool_uses_api():
     result = tools['search_wikipedia'].invoke({'query': 'Gaza war', 'limit': 1})
 
     assert result == [{'title': 'Gaza War', 'snippet': 'Article snippet', 'url': 'https://en.wikipedia.org/wiki/Gaza_War'}]
-    assert client.calls[0][2]['User-Agent'].startswith('ArchiveChat/')
+    assert client.calls[0][2]['User-Agent'].startswith('ArchiveLens/')
 
 
 def test_wikipedia_summary_tool_uses_api():

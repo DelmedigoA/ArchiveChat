@@ -41,7 +41,7 @@ def test_cli_prints_responses_api_text_blocks(monkeypatch, setup_cli, capsys):
     monkeypatch.setattr('sys.argv', ['archivechat', '--question', 'hi'])
     cli.main()
     out = capsys.readouterr().out
-    assert 'ArchiveChat: Hello from Responses API.' in out
+    assert 'ArchiveLens: Hello from Responses API.' in out
     assert "'type': 'text'" not in out
 
 

@@ -98,6 +98,6 @@ def _runtime_context(
         f'- Project FAQ records available through dedicated FAQ tools: {faq_count}.\n'
         f'- Main Bearing Witness document: {document_title}; searchable page count: {document_pages}.\n'
         "- Treat the Bearing Witness document as the project's main analytical source.\n"
-        '- This is a beta ArchiveChat build: most references cited inside the Bearing Witness document do not yet have inspectable archive items/catalog records available in this chat.\n'
+        '- This is a beta ArchiveLens build: most references cited inside the Bearing Witness document do not yet have inspectable archive items/catalog records available in this chat.\n'
         '- When a document citation has no inspectable item, say that the document supports the point but the referenced source is not available for item-modal inspection here.'
     )

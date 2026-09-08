@@ -8,7 +8,7 @@ from urllib.parse import quote, urlparse
 import httpx
 from langchain_core.tools import tool
 
-HEADERS = {'User-Agent': 'ArchiveChat/0.1 (research assistant; contact: local)'}
+HEADERS = {'User-Agent': 'ArchiveLens/0.1 (research assistant; contact: local)'}
 
 
 class HttpClient(Protocol):

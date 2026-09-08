@@ -99,7 +99,7 @@ def main():
                 raise SystemExit(1)
             continue
         messages = result['messages']
-        print('\nArchiveChat:', message_text(messages[-1].content), '\n')
+        print('\nArchiveLens:', message_text(messages[-1].content), '\n')
         if args.question:
             break
 

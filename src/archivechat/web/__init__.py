@@ -1,1 +1,1 @@
-"""Local web UI for ArchiveChat."""
+"""Local web UI for ArchiveLens."""

@@ -24,7 +24,7 @@ def test_chat_prompt_rejects_missing_files(tmp_path):
 def test_default_chat_prompt_describes_archive_role():
     prompt = load_chat_prompt(PROMPT_DIR)
 
-    assert 'ArchiveChat' in prompt
+    assert 'ArchiveLens' in prompt
     assert 'Gaza war' in prompt
     assert 'Bearing Witness' in prompt
     assert 'read the full items' in prompt

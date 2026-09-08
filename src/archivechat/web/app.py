@@ -1,4 +1,4 @@
-"""Starlette app for the local ArchiveChat web UI."""
+"""Starlette app for the local ArchiveLens web UI."""
 
 from pathlib import Path
 from typing import Any

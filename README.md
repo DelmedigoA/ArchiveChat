@@ -1,6 +1,6 @@
-# ArchiveChat
+# ArchiveLens
 
-ArchiveChat will help an agent discover relevant archive items, inspect their
+ArchiveLens will help an agent discover relevant archive items, inspect their
 content, and cite evidence. Compilation prepares existing material; chat searches
 and reads the resulting collection.
 

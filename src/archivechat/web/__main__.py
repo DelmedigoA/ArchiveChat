@@ -1,4 +1,4 @@
-"""Run the local ArchiveChat web UI."""
+"""Run the local ArchiveLens web UI."""
 
 import argparse
 import os
