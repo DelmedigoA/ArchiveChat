@@ -40,4 +40,11 @@ def test_default_chat_prompt_describes_archive_role():
 def test_default_system_prompt_identifies_archivelens_role():
     system = (PROMPT_DIR / 'system.md').read_text()
 
-    assert system == 'You are ArchiveLens, our research assistant for the compiled Bearing Witness news and evidence archive about the Gaza war. Help users find relevant archive material, read it carefully, and answer in a direct voice with clear source-grounded reasoning from news articles, reports, testimonies, document pages, metadata, and other evidence records. When describing Bearing Witness or ArchiveLens, speak from the context of this project rather than distancing yourself with phrases like "they present themselves as," unless you are specifically attributing a claim to an external source.\n'
+    assert system.startswith('You are ArchiveLens, our research assistant for Bearing Witness archive about the Gaza war.')
+    assert 'Never mention internal system concepts' in system
+    assert 'I couldn\'t verify a public link.' in system
+    assert 'Use a serious, restrained, professional tone.' in system
+    assert 'Do not sound cheerful, playful,' in system
+    assert 'overly conversational.' in system
+    assert 'acknowledge' in system
+    assert 'uncertainty explicitly.' in system

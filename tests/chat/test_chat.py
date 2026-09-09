@@ -90,8 +90,8 @@ def test_graph_searches_reads_and_answers(tmp_path):
             assert messages[0].content.startswith(prompt)
             assert 'Runtime collection status:' in messages[0].content
             assert 'Available inspectable archive catalog records/items: 0 catalog records across 1 items.' in messages[0].content
-            assert 'Main Bearing Witness document: not loaded; searchable page count: 0.' in messages[0].content
-            assert 'beta ArchiveLens build' in messages[0].content
+            assert 'Main Bearing Witness document:' not in messages[0].content
+            assert 'beta ArchiveLens build' not in messages[0].content
             results = [m for m in messages if isinstance(m, ToolMessage)]
             if not results:
                 return AIMessage(content='', tool_calls=[dict(name='search_items', args={'query': 'ambulances'}, id='search')])
@@ -306,6 +306,7 @@ def test_runtime_context_counts_catalog_faq_document_and_metadata_records(tmp_pa
         prompt='Base prompt.',
         faq_collection=FakeFaqs(),
         document_collection=FakeDocument(),
+        include_document=True,
         project_metadata_collection=FakeMetadata(),
     ).invoke({'messages': [HumanMessage(content='status?')]})
 

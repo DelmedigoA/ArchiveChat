@@ -10,38 +10,64 @@
     <link rel="stylesheet" href="/static/styles.css" />
   </head>
   <body>
-    <main class="app-shell">
-      <header class="bw-header">
-        <a href="https://bearing-witness.com/" target="_blank" rel="noopener noreferrer" aria-label="Bearing Witness home">
-          <img src="https://bearing-witness.com/wp-content/themes/neve-bearing-witness/assets/img/bw-logo.png" alt="Bearing Witness" />
-        </a>
-        <a class="bw-back" href="https://bearing-witness.com/" target="_blank" rel="noopener noreferrer">Back to the project ↗</a>
-      </header>
+    <main class="app-shell" id="app-shell">
+      <div class="workspace" id="workspace">
+        <section class="chat-workspace" aria-label="ArchiveLens chat workspace">
+          <header class="bw-header">
+            <a href="https://bearing-witness.com/" target="_blank" rel="noopener noreferrer" aria-label="Bearing Witness home">
+              <img src="https://bearing-witness.com/wp-content/themes/neve-bearing-witness/assets/img/bw-logo.png" alt="Bearing Witness" />
+            </a>
+            <a class="bw-back" href="https://bearing-witness.com/" target="_blank" rel="noopener noreferrer">Back to the project ↗</a>
+          </header>
 
-      <section class="intro" aria-labelledby="page-title">
-        <div class="kicker">BEARING WITNESS / EVIDENCE</div>
-        <h1 id="page-title">ArchiveLens</h1>
-      </section>
+          <section class="intro" aria-labelledby="page-title">
+            <div class="kicker">BEARING WITNESS / EVIDENCE</div>
+            <h1 id="page-title">ArchiveLens</h1>
+          </section>
 
-      <section class="chat-panel" aria-label="ArchiveLens chat">
-        <header class="chat-header">
-          <div>
-            <h2>Conversation</h2>
-            <p>Searches, reads, and cites archive items.</p>
+          <section class="chat-panel" aria-label="ArchiveLens chat">
+            <header class="chat-header">
+              <div>
+                <h2>Conversation</h2>
+                <p>Searches, reads, and cites archive items.</p>
+              </div>
+              <span class="status-pill" id="status">Ready</span>
+            </header>
+            <div class="messages" id="messages"></div>
+            <form class="composer" id="composer">
+              <textarea id="question" rows="2" placeholder="Ask a question about the archive…" required></textarea>
+              <button type="submit">Ask</button>
+            </form>
+          </section>
+
+          <p class="note">
+            Based on the local archive collection. AI-generated answers may contain errors;
+            check the cited item records and original URLs.
+          </p>
+        </section>
+
+        <div class="workspace-divider" id="workspace-divider" role="separator" aria-label="Resize chat and document panes" aria-orientation="vertical" tabindex="0"></div>
+
+        <aside class="document-pane" id="document-pane" aria-label="Bearing Witness document" aria-hidden="true">
+          <header class="document-pane__header">
+            <div>
+              <h2 id="document-title">Bearing Witness – Gaza</h2>
+              <p id="document-version">English v6.7.0 · July 5, 2025</p>
+            </div>
+            <button class="document-pane__close" id="document-close" type="button" aria-label="Close document viewer">×</button>
+          </header>
+          <div class="document-toolbar" aria-label="PDF controls">
+            <button id="document-previous" type="button" aria-label="Previous page">‹</button>
+            <label>Page <input id="document-page" type="number" min="1" inputmode="numeric" aria-label="PDF page number" /> <span id="document-page-count">of —</span></label>
+            <button id="document-next" type="button" aria-label="Next page">›</button>
+            <span class="document-toolbar__spacer"></span>
+            <button id="document-zoom-out" type="button" aria-label="Zoom out">−</button>
+            <button id="document-zoom-in" type="button" aria-label="Zoom in">+</button>
           </div>
-          <span class="status-pill" id="status">Ready</span>
-        </header>
-        <div class="messages" id="messages"></div>
-        <form class="composer" id="composer">
-          <textarea id="question" rows="2" placeholder="Ask a question about the archive…" required></textarea>
-          <button type="submit">Ask</button>
-        </form>
-      </section>
-
-      <p class="note">
-        Based on the local archive collection. AI-generated answers may contain errors;
-        check the cited item records and original URLs.
-      </p>
+          <p class="document-status" id="document-status" aria-live="polite">Choose a Bearing Witness citation to open the document.</p>
+          <div class="document-canvas-wrap" id="document-canvas-wrap"><canvas id="document-canvas"></canvas></div>
+        </aside>
+      </div>
     </main>
     <script src="/static/app.js"></script>
   </body>

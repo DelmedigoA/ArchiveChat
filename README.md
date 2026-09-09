@@ -34,6 +34,39 @@ evaluations will follow as separate steps.
 
 ## Compile saved ArchiveAI exports
 
+Import the article-like catalog from the ArchiveAI ground-truth workbook. This
+creates catalog-only items for rows without fetched text and writes a manifest
+with content status. Posts are excluded from this first retrieval corpus.
+
+```sh
+cd ~/Dev/ArchiveChat
+PYTHONPATH=src uv run python -m archivechat.compilation.workbook \
+  "/Users/delmedigo/Dev/ArchiveAI/resources/workbooks/ground truth hebrew 800.xlsx" \
+  --export-dir /Users/delmedigo/Dev/ArchiveAI/data/HF_text_only \
+  --output data/archiveai/compiled/items \
+  --manifest data/archiveai/catalog-manifest.json
+```
+
+The manifest distinguishes `content_available`, `catalog_only`, and `invalid`
+records. Only `content_available` records are written to the RAG collection;
+catalog-only records remain in the manifest for acquisition but are not
+searchable or readable evidence.
+
+Create a controlled queue for ArchiveAI acquisition:
+
+```sh
+PYTHONPATH=src uv run python -m archivechat.compilation.fetch_missing \
+  --manifest data/archiveai/catalog-manifest.json \
+  --output data/archiveai/acquisition-queue.jsonl \
+  --limit 25
+```
+
+Import the queued URLs into ArchiveAI's item store and run its normal
+`scripts/acquire.py` stage. Copy the resulting `raw_content.json`/`output.json`
+export folders into the ArchiveAI export directory, then rerun the workbook
+import command. Existing content is skipped and only newly fetched records are
+compiled.
+
 The importer reads ArchiveAI export folders containing `raw_content.json` and
 `output.json` catalog records. It uses saved article or social-thread text
 without fetching URLs or generating new catalog metadata.
@@ -54,6 +87,18 @@ prepared text gets a new representation ID. Original exports remain in ArchiveAI
 
 ## Chat with the collection
 
+The standard web configuration is in `config/archive-lens.yaml`. Run the web
+UI with all model, collection, document, search, embedding, and web-tool
+settings from that file:
+
+```sh
+cd ~/Dev/ArchiveChat
+PYTHONPATH=src uv run python -m archivechat.web --config config/archive-lens.yaml
+```
+
+Command-line flags override values from the YAML file. The terminal chat entry
+point accepts the same `--config` option.
+
 Set `OPENAI_API_KEY` in your local `.env` (or environment). The default model is
 `gpt-5` with `low` reasoning effort and `low` verbosity; optionally override
 those with `ARCHIVECHAT_MODEL`, `ARCHIVECHAT_REASONING_EFFORT`,
@@ -61,9 +106,11 @@ those with `ARCHIVECHAT_MODEL`, `ARCHIVECHAT_REASONING_EFFORT`,
 Search returns up to ten item candidates by default; override that with
 `ARCHIVECHAT_SEARCH_LIMIT` or `--search-limit`. FAQ search returns up to five
 questions by default; override that with `ARCHIVECHAT_FAQ_SEARCH_LIMIT` or
-`--faq-search-limit`. Bearing Witness document search returns up to five page
-matches by default; override that with `ARCHIVECHAT_DOCUMENT_SEARCH_LIMIT` or
-`--document-search-limit`. Project metadata is loaded from
+`--faq-search-limit`. The Bearing Witness document is excluded by default because
+it changes both the available tools and the system prompt. Enable it with
+`--include-document` (or `ARCHIVECHAT_INCLUDE_DOCUMENT=true`); document search
+then returns up to five page matches by default, configurable with
+`ARCHIVECHAT_DOCUMENT_SEARCH_LIMIT` or `--document-search-limit`. Project metadata is loaded from
 `data/project-metadata/bearing-witness.json` by default; override that with
 `ARCHIVECHAT_PROJECT_METADATA_FILE` or `--project-metadata-file`. Reasoning runs through OpenAI's
 Responses API; pass `--reasoning-effort none` to disable reasoning. Run:
@@ -86,6 +133,7 @@ PYTHONPATH=src uv run python -m archivechat.chat \
   --faq-file data/faqs/bearing-witness/faq.json \
   --faq-search-limit 5 \
   --document-text data/documents/bearing-witness/gaza-english-v6.7.0.txt \
+  --include-document \
   --document-search-limit 5 \
   --project-metadata-file data/project-metadata/bearing-witness.json \
   --semantic-search \
@@ -104,6 +152,15 @@ clickable citation markers such as `[1]` before the final message when the item
 is already known; clicking a marker opens the item/catalog record modal with
 summary, URL, and tags.
 
+Bearing Witness document citations use `(Bearing Witness, p. 125)` or
+`(Bearing Witness, pp. 125–128)`. In the web UI, these open a resizable PDF.js
+reader beside the conversation at the citation's first page. The default local
+asset is `Gaza_English-v6.7.0-5.7.25 (2).pdf`; configure a versioned CDN/static
+asset with `document_pdf_url`, `--document-pdf-url`, or
+`ARCHIVECHAT_DOCUMENT_PDF_URL` for deployment. The serving host must support
+HTTP byte-range requests for progressive loading. Override the local fallback
+file with `--document-pdf-path` or `ARCHIVECHAT_DOCUMENT_PDF_PATH`.
+
 Fully explicit local web UI command:
 
 ```sh
@@ -117,6 +174,7 @@ PYTHONPATH=src uv run python -m archivechat.web \
   --faq-file data/faqs/bearing-witness/faq.json \
   --faq-search-limit 5 \
   --document-text data/documents/bearing-witness/gaza-english-v6.7.0.txt \
+  --include-document \
   --document-search-limit 5 \
   --project-metadata-file data/project-metadata/bearing-witness.json \
   --semantic-search \

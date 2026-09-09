@@ -15,6 +15,8 @@ from archivechat.chat.results import _json_from_content, extract_read_items, ite
 
 
 STATIC_DIR = Path(__file__).with_name('static')
+DOCUMENT_PDF_PATH = Path(__file__).resolve().parents[3] / 'Gaza_English-v6.7.0-5.7.25 (2).pdf'
+DOCUMENT_PDF_ROUTE = '/documents/bearing-witness-gaza-english-v6.7.0.pdf'
 
 
 TOOL_STATUS = {
@@ -81,13 +83,33 @@ def result_messages_from_event(event: dict[str, Any]) -> list[Any] | None:
     return None
 
 
-def create_app(graph: Any, initial_messages: list[Any] | None = None, static_dir: Path | None = STATIC_DIR) -> Starlette:
+def create_app(
+    graph: Any,
+    initial_messages: list[Any] | None = None,
+    static_dir: Path | None = STATIC_DIR,
+    document_pdf_url: str | None = None,
+    document_pdf_path: Path | None = DOCUMENT_PDF_PATH,
+) -> Starlette:
     messages = list(initial_messages or [])
 
     async def index(request: Request):
         if static_dir is None:
             return JSONResponse({'ok': True})
         return FileResponse(static_dir / 'index.html')
+
+    async def document_config(request: Request):
+        """Expose the public, deployment-managed PDF location to the lazy viewer."""
+        return JSONResponse({
+            'pdf_url': document_pdf_url or '',
+            'title': 'Bearing Witness – Gaza',
+            'version': 'English v6.7.0 · July 5, 2025',
+        })
+
+    async def document_pdf(request: Request):
+        """Serve the local development asset with byte-range support when present."""
+        if document_pdf_path is None or not document_pdf_path.is_file():
+            return JSONResponse({'detail': 'Bearing Witness PDF asset is unavailable'}, status_code=404)
+        return FileResponse(document_pdf_path, media_type='application/pdf')
 
     async def chat(request: Request):
         payload = await request.json()
@@ -159,6 +181,8 @@ def create_app(graph: Any, initial_messages: list[Any] | None = None, static_dir
 
     routes = [
         Route('/', index),
+        Route('/api/document-config', document_config),
+        Route(DOCUMENT_PDF_ROUTE, document_pdf),
         Route('/api/chat', chat, methods=['POST']),
         Route('/api/chat/stream', chat_stream, methods=['POST']),
     ]

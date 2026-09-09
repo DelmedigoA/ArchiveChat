@@ -1,6 +1,15 @@
 const state = {
   items: new Map(),
   busy: false,
+  splitPercent: Number(sessionStorage.getItem("archivechat:workspace-split")) || 50,
+  viewer: {
+    config: null,
+    pdfjs: null,
+    document: null,
+    page: 1,
+    zoom: 1,
+    loading: null,
+  },
 };
 
 const els = {
@@ -8,6 +17,21 @@ const els = {
   question: document.getElementById("question"),
   messages: document.getElementById("messages"),
   status: document.getElementById("status"),
+  workspace: document.getElementById("workspace"),
+  divider: document.getElementById("workspace-divider"),
+  documentPane: document.getElementById("document-pane"),
+  documentClose: document.getElementById("document-close"),
+  documentTitle: document.getElementById("document-title"),
+  documentVersion: document.getElementById("document-version"),
+  documentStatus: document.getElementById("document-status"),
+  documentCanvas: document.getElementById("document-canvas"),
+  documentCanvasWrap: document.getElementById("document-canvas-wrap"),
+  documentPage: document.getElementById("document-page"),
+  documentPageCount: document.getElementById("document-page-count"),
+  documentPrevious: document.getElementById("document-previous"),
+  documentNext: document.getElementById("document-next"),
+  documentZoomOut: document.getElementById("document-zoom-out"),
+  documentZoomIn: document.getElementById("document-zoom-in"),
 };
 
 els.composer.addEventListener("submit", async (event) => {
@@ -32,6 +56,12 @@ els.question.addEventListener("keydown", (event) => {
 });
 
 document.addEventListener("click", async (event) => {
+  const documentCitation = event.target.closest("[data-document-page]");
+  if (documentCitation) {
+    await openDocumentViewer(Number(documentCitation.dataset.documentPage));
+    return;
+  }
+
   const sourceButton = event.target.closest("[data-item-id]");
   if (sourceButton) {
     const item = state.items.get(sourceButton.dataset.itemId);
@@ -50,6 +80,20 @@ document.addEventListener("click", async (event) => {
   const modal = document.getElementById("item-modal");
   if (modal && (event.target === modal || event.target.closest("[data-modal-close]"))) {
     closeItemModal();
+  }
+});
+
+els.documentClose.addEventListener("click", closeDocumentViewer);
+els.documentPrevious.addEventListener("click", () => changeDocumentPage(-1));
+els.documentNext.addEventListener("click", () => changeDocumentPage(1));
+els.documentZoomOut.addEventListener("click", () => changeDocumentZoom(-0.15));
+els.documentZoomIn.addEventListener("click", () => changeDocumentZoom(0.15));
+els.documentPage.addEventListener("change", () => showDocumentPage(Number(els.documentPage.value)));
+els.divider.addEventListener("pointerdown", beginWorkspaceResize);
+els.divider.addEventListener("keydown", handleDividerKeydown);
+window.addEventListener("resize", () => {
+  if (state.viewer.document) {
+    renderDocumentPage();
   }
 });
 
@@ -160,6 +204,7 @@ function handleStreamEvent(event, streamState) {
 function appendMessage(role, text) {
   const node = document.createElement("article");
   node.className = `message message--${role}`;
+  setMessageDirection(node, text);
   node.textContent = text;
   els.messages.appendChild(node);
   node.scrollIntoView({ block: "end" });
@@ -168,6 +213,7 @@ function appendMessage(role, text) {
 function appendAssistantMessage(answer, items) {
   const node = document.createElement("article");
   node.className = "message message--assistant";
+  setMessageDirection(node, answer);
   node.innerHTML = renderAnswer(answer, items);
   els.messages.appendChild(node);
   node.scrollIntoView({ block: "end" });
@@ -219,6 +265,7 @@ function renderStreamingAnswer(streamState) {
   if (!streamState.hasAnswerText) {
     return;
   }
+  setMessageDirection(streamState.node, streamState.rawAnswer);
   streamState.node.innerHTML = renderAnswer(streamState.rawAnswer, streamState.items);
   streamState.node.scrollIntoView({ block: "end" });
 }
@@ -228,6 +275,21 @@ function replaceWithAssistantMessage(streamState, answer) {
   streamState.rawAnswer = answer;
   streamState.hasAnswerText = true;
   renderStreamingAnswer(streamState);
+}
+
+function setMessageDirection(node, text) {
+  const isRtl = isHebrewDominant(text);
+  node.dir = isRtl ? "rtl" : "ltr";
+  node.classList.toggle("message--rtl", isRtl);
+}
+
+function isHebrewDominant(text) {
+  const letters = text.match(/[\p{L}\p{M}]/gu) || [];
+  if (!letters.length) {
+    return false;
+  }
+  const hebrewLetters = letters.filter((character) => /[\u0590-\u05FF]/u.test(character));
+  return hebrewLetters.length > letters.length / 2;
 }
 
 function renderAnswer(answer, items) {
@@ -256,10 +318,172 @@ function renderAnswer(answer, items) {
     const title = item.title || label || `Source ${number}`;
     return `<button class="citation-link" type="button" data-item-id="${escapeAttribute(item.item_id)}" title="${escapeAttribute(title)}" aria-label="Open source ${number}: ${escapeAttribute(title)}">[${number}]</button>`;
   });
-  return linked
+  return renderDocumentCitations(linked)
     .split(/\n{2,}/)
     .map((paragraph) => `<p>${paragraph.replace(/\n/g, "<br>")}</p>`)
     .join("");
+}
+
+function renderDocumentCitations(text) {
+  const citationPattern = /(\(?\s*Bearing\s+Witness\s*,\s*p{1,2}\.?\s*)(\d+)(?:\s*(?:–|—|-|to)\s*(\d+))?(\s*\)?)/gi;
+  return text.replace(citationPattern, (match, prefix, start, end, suffix) => {
+    const firstPage = Number(start);
+    const lastPage = end ? Number(end) : firstPage;
+    if (!Number.isInteger(firstPage) || firstPage < 1 || lastPage < firstPage) {
+      return match;
+    }
+    return `<button class="document-citation-link" type="button" data-document-page="${firstPage}" title="Open Bearing Witness PDF at page ${firstPage}" aria-label="Open Bearing Witness PDF at page ${firstPage}">${prefix}${start}${end ? `–${end}` : ""}${suffix}</button>`;
+  });
+}
+
+function setWorkspaceSplit(percent) {
+  state.splitPercent = Math.max(30, Math.min(70, percent));
+  els.workspace.style.setProperty("--chat-pane-width", `${state.splitPercent}%`);
+  sessionStorage.setItem("archivechat:workspace-split", String(state.splitPercent));
+}
+
+function openWorkspace() {
+  els.workspace.classList.add("workspace--viewer-open");
+  els.documentPane.setAttribute("aria-hidden", "false");
+  setWorkspaceSplit(state.splitPercent);
+}
+
+function closeDocumentViewer() {
+  els.workspace.classList.remove("workspace--viewer-open");
+  els.documentPane.setAttribute("aria-hidden", "true");
+  els.question.focus();
+}
+
+function beginWorkspaceResize(event) {
+  if (!els.workspace.classList.contains("workspace--viewer-open")) {
+    return;
+  }
+  event.preventDefault();
+  els.divider.setPointerCapture(event.pointerId);
+  const resize = (moveEvent) => {
+    const bounds = els.workspace.getBoundingClientRect();
+    setWorkspaceSplit(((moveEvent.clientX - bounds.left) / bounds.width) * 100);
+  };
+  const finish = () => {
+    els.divider.removeEventListener("pointermove", resize);
+    els.divider.removeEventListener("pointerup", finish);
+    els.divider.removeEventListener("pointercancel", finish);
+    if (state.viewer.document) {
+      renderDocumentPage();
+    }
+  };
+  els.divider.addEventListener("pointermove", resize);
+  els.divider.addEventListener("pointerup", finish);
+  els.divider.addEventListener("pointercancel", finish);
+}
+
+function handleDividerKeydown(event) {
+  if (!els.workspace.classList.contains("workspace--viewer-open")) {
+    return;
+  }
+  if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+    event.preventDefault();
+    setWorkspaceSplit(state.splitPercent + (event.key === "ArrowLeft" ? -5 : 5));
+    if (state.viewer.document) {
+      renderDocumentPage();
+    }
+  }
+}
+
+async function openDocumentViewer(page) {
+  openWorkspace();
+  setDocumentStatus("Loading Bearing Witness document…");
+  try {
+    const config = await getDocumentConfig();
+    if (!config.pdf_url) {
+      throw new Error("The Bearing Witness PDF is not configured for this deployment.");
+    }
+    els.documentTitle.textContent = config.title || "Bearing Witness – Gaza";
+    els.documentVersion.textContent = config.version || "";
+    await loadPdfDocument(config.pdf_url);
+    await showDocumentPage(page);
+  } catch (error) {
+    setDocumentStatus(error.message || "The document could not be loaded.", true);
+  }
+}
+
+async function getDocumentConfig() {
+  if (state.viewer.config) {
+    return state.viewer.config;
+  }
+  const response = await fetch("/api/document-config");
+  if (!response.ok) {
+    throw new Error("The document viewer configuration could not be loaded.");
+  }
+  state.viewer.config = await response.json();
+  return state.viewer.config;
+}
+
+async function loadPdfDocument(url) {
+  if (state.viewer.document && state.viewer.url === url) {
+    return state.viewer.document;
+  }
+  if (!state.viewer.loading) {
+    state.viewer.loading = import("/static/vendor/pdfjs/pdf.mjs")
+      .then(async (pdfjs) => {
+        pdfjs.GlobalWorkerOptions.workerSrc = "/static/vendor/pdfjs/pdf.worker.mjs";
+        state.viewer.pdfjs = pdfjs;
+        state.viewer.document = await pdfjs.getDocument({ url, rangeChunkSize: 65536 }).promise;
+        state.viewer.url = url;
+        return state.viewer.document;
+      })
+      .finally(() => {
+        state.viewer.loading = null;
+      });
+  }
+  return state.viewer.loading;
+}
+
+async function showDocumentPage(page) {
+  const pdf = state.viewer.document;
+  if (!pdf) {
+    return;
+  }
+  state.viewer.page = Math.max(1, Math.min(pdf.numPages, Math.round(page) || 1));
+  els.documentPage.value = String(state.viewer.page);
+  els.documentPage.max = String(pdf.numPages);
+  els.documentPageCount.textContent = `of ${pdf.numPages}`;
+  await renderDocumentPage();
+}
+
+async function changeDocumentPage(delta) {
+  await showDocumentPage(state.viewer.page + delta);
+}
+
+async function changeDocumentZoom(delta) {
+  state.viewer.zoom = Math.max(0.6, Math.min(2.5, state.viewer.zoom + delta));
+  await renderDocumentPage();
+}
+
+async function renderDocumentPage() {
+  const pdf = state.viewer.document;
+  if (!pdf) {
+    return;
+  }
+  setDocumentStatus(`Rendering page ${state.viewer.page}…`);
+  const page = await pdf.getPage(state.viewer.page);
+  const baseViewport = page.getViewport({ scale: 1 });
+  const availableWidth = Math.max(280, els.documentCanvasWrap.clientWidth - 28);
+  const scale = Math.min(availableWidth / baseViewport.width, 2) * state.viewer.zoom;
+  const viewport = page.getViewport({ scale });
+  const pixelRatio = window.devicePixelRatio || 1;
+  const context = els.documentCanvas.getContext("2d");
+  els.documentCanvas.width = Math.floor(viewport.width * pixelRatio);
+  els.documentCanvas.height = Math.floor(viewport.height * pixelRatio);
+  els.documentCanvas.style.width = `${Math.floor(viewport.width)}px`;
+  els.documentCanvas.style.height = `${Math.floor(viewport.height)}px`;
+  await page.render({ canvasContext: context, viewport, transform: [pixelRatio, 0, 0, pixelRatio, 0, 0] }).promise;
+  setDocumentStatus(`Page ${state.viewer.page} of ${pdf.numPages}`);
+}
+
+function setDocumentStatus(message, isError = false) {
+  els.documentStatus.textContent = message;
+  els.documentStatus.classList.toggle("document-status--error", isError);
 }
 function renderInlineMarkdown(text) {
   return text

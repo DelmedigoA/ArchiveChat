@@ -80,6 +80,7 @@ def test_graph_exposes_bearing_witness_document_tools(tmp_path):
         DocumentModel(),
         prompt='Test system prompt.',
         document_collection=FakeDocument(),
+        include_document=True,
     ).invoke({'messages': [HumanMessage(content='What does the document say about hospitals?')]})
 
     assert result['messages'][-1].content == 'Full document evidence'

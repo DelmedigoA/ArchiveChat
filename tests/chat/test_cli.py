@@ -80,11 +80,11 @@ def test_cli_passes_project_metadata_collection(monkeypatch, setup_cli):
 
 
 def test_cli_can_enable_openai_embeddings(monkeypatch, setup_cli):
-    monkeypatch.setattr('sys.argv', ['archivechat', '--semantic-search', '--question', 'hi'])
+    monkeypatch.setattr('sys.argv', ['archivechat', '--semantic-search', '--include-document', '--question', 'hi'])
     cli.main()
     cli.OpenAIEmbeddings.assert_called_once_with(model='text-embedding-3-small', timeout=60, max_retries=1)
-    assert cli.Collection.call_args.kwargs['embeddings'] == 'embeddings'
-    assert cli.DocumentCollection.call_args.kwargs['embeddings'] == 'embeddings'
+    assert cli.Collection.call_args.kwargs['embeddings'].__class__.__name__ == 'CachedEmbeddings'
+    assert cli.DocumentCollection.call_args.kwargs['embeddings'].__class__.__name__ == 'CachedEmbeddings'
 
 
 def test_cli_allows_embedding_model_override(monkeypatch, setup_cli):

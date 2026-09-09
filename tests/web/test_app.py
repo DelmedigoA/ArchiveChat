@@ -55,6 +55,48 @@ def test_chat_api_rejects_empty_question():
     assert response.status_code == 400
 
 
+def test_document_config_returns_deployment_managed_pdf_url():
+    app = create_app(
+        graph=SimpleNamespace(),
+        initial_messages=[],
+        static_dir=None,
+        document_pdf_url='https://assets.example.org/documents/bearing-witness-gaza-english-v6.7.0.pdf',
+    )
+
+    response = TestClient(app).get('/api/document-config')
+
+    assert response.status_code == 200
+    assert response.json() == {
+        'pdf_url': 'https://assets.example.org/documents/bearing-witness-gaza-english-v6.7.0.pdf',
+        'title': 'Bearing Witness – Gaza',
+        'version': 'English v6.7.0 · July 5, 2025',
+    }
+
+
+def test_document_config_reports_when_no_pdf_is_configured():
+    app = create_app(graph=SimpleNamespace(), initial_messages=[], static_dir=None)
+
+    assert TestClient(app).get('/api/document-config').json()['pdf_url'] == ''
+
+
+def test_local_document_asset_is_served_with_byte_ranges(tmp_path):
+    pdf_path = tmp_path / 'bearing-witness.pdf'
+    pdf_path.write_bytes(b'%PDF-test-document')
+    app = create_app(
+        graph=SimpleNamespace(),
+        initial_messages=[],
+        static_dir=None,
+        document_pdf_url='/documents/bearing-witness-gaza-english-v6.7.0.pdf',
+        document_pdf_path=pdf_path,
+    )
+
+    response = TestClient(app).get('/documents/bearing-witness-gaza-english-v6.7.0.pdf', headers={'Range': 'bytes=0-4'})
+
+    assert response.status_code == 206
+    assert response.content == b'%PDF-'
+    assert response.headers['accept-ranges'] == 'bytes'
+
+
 
 def test_chat_stream_returns_status_deltas_final_items_and_done():
     item = Item(

@@ -1,0 +1,19 @@
+collection: data/archiveai/compiled/items
+model: gpt-5.6-luna
+reasoning_effort: medium
+verbosity: low
+search_limit: 10
+faq_file: data/faqs/bearing-witness/faq.json
+faq_search_limit: 10
+document_text: data/documents/bearing-witness/gaza-english-v6.7.0.txt
+# Deploy this versioned asset behind a CDN or static host that supports HTTP Range requests.
+document_pdf_url: /documents/bearing-witness-gaza-english-v6.7.0.pdf
+include_document: true
+document_search_limit: 10
+project_metadata_file: data/project-metadata/bearing-witness.json
+semantic_search: true
+embedding_model: text-embedding-3-small
+embedding_cache: data/index/embeddings.json
+web_tools: true
+host: 127.0.0.1
+port: 8766
