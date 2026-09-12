@@ -55,6 +55,7 @@ def test_document_viewer_maps_exact_ai_quotes_to_pdf_text_layer_spans():
     assert 'getTextContent()' in app_js
     assert 'new state.viewer.pdfjs.TextLayer' in app_js
     assert 'await textLayerTask.render()' in app_js
+    assert '--total-scale-factor' in app_js
     assert 'applyEvidenceHighlights' in app_js
     assert 'normalizedPage.indexOf(normalizedQuote)' in app_js
     assert 'const records = []' in app_js

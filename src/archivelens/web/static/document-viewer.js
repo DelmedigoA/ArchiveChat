@@ -148,7 +148,7 @@ async function renderDocumentPage() {
   pageLayer.style.width = `${Math.floor(viewport.width)}px`;
   pageLayer.style.height = `${Math.floor(viewport.height)}px`;
   textLayer.replaceChildren();
-  textLayer.style.setProperty("--scale-factor", scale);
+  textLayer.style.setProperty("--total-scale-factor", scale);
   const textLayerTask = new state.viewer.pdfjs.TextLayer({
     textContentSource: textContent,
     container: textLayer,

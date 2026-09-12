@@ -500,11 +500,23 @@ textarea {
 }
 
 .textLayer {
+  color-scheme: only light;
   position: absolute;
+  text-align: initial;
   inset: 0;
-  overflow: hidden;
-  line-height: normal;
+  overflow: clip;
+  opacity: 1;
+  line-height: 1;
+  letter-spacing: normal;
+  word-spacing: normal;
+  text-size-adjust: none;
+  forced-color-adjust: none;
   transform-origin: 0 0;
+  caret-color: CanvasText;
+  z-index: 0;
+  --min-font-size: 1;
+  --text-scale-factor: calc(var(--total-scale-factor) * var(--min-font-size));
+  --min-font-size-inv: calc(1 / var(--min-font-size));
 }
 
 .textLayer span {
@@ -512,12 +524,28 @@ textarea {
   color: transparent;
   white-space: pre;
   cursor: text;
-  transform-origin: 0 0;
+  transform-origin: 0% 0%;
+  user-select: text;
+}
+
+.textLayer > :not(.markedContent),
+.textLayer .markedContent span:not(.markedContent) {
+  z-index: 1;
+  --font-height: 0;
+  font-size: calc(var(--text-scale-factor) * var(--font-height));
+  --scale-x: 1;
+  --rotate: 0deg;
+  transform: rotate(var(--rotate)) scaleX(var(--scale-x))
+    scale(var(--min-font-size-inv));
+}
+
+.textLayer .markedContent {
+  display: contents;
 }
 
 .textLayer mark.textLayer__highlight {
-  padding: 0.08em 0.02em;
-  margin: -0.08em -0.02em;
+  padding: 1px;
+  margin: -1px;
   background: rgba(255, 239, 145, 0.58);
   border-radius: 3px;
   box-shadow: 0 0 0 1px rgba(226, 187, 46, 0.14);
