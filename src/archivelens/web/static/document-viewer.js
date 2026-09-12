@@ -162,33 +162,26 @@ async function renderDocumentPage() {
 
 function applyEvidenceHighlights(items, quotes) {
   const textLayer = document.getElementById("document-text-layer");
-  const spans = [...textLayer.querySelectorAll("span")];
-  const normalizedItems = items.map((item) => normalizeText(item.str));
-  const normalizedPage = normalizedItems.filter(Boolean).join(" ");
-  const itemOffsets = [];
+  const spans = [...textLayer.querySelectorAll("span")].filter((span) => normalizeText(span.textContent));
+  const normalizedSpans = spans.map((span) => normalizeText(span.textContent));
+  const normalizedPage = normalizedSpans.join(" ");
+  const spanOffsets = [];
   let offset = 0;
-  normalizedItems.forEach((text, index) => {
-    if (!text) return;
-    itemOffsets[index] = { start: offset, end: offset + text.length };
+  normalizedSpans.forEach((text, index) => {
+    spanOffsets[index] = { start: offset, end: offset + text.length };
     offset += text.length + 1;
   });
   const matchedItems = new Set();
   for (const quote of quotes) {
-    const start = normalizedPage.indexOf(normalizeText(quote));
+    const normalizedQuote = normalizeText(quote);
+    const start = normalizedPage.indexOf(normalizedQuote);
     if (start < 0) continue;
-    const end = start + normalizeText(quote).length;
-    itemOffsets.forEach((range, index) => {
+    const end = start + normalizedQuote.length;
+    spanOffsets.forEach((range, index) => {
       if (range && range.start < end && range.end > start) matchedItems.add(index);
     });
   }
-  let itemIndex = 0;
-  for (const span of spans) {
-    const spanText = normalizeText(span.textContent);
-    if (!spanText) continue;
-    while (itemIndex < normalizedItems.length && !normalizedItems[itemIndex]) itemIndex += 1;
-    span.classList.toggle("textLayer__highlight", matchedItems.has(itemIndex));
-    itemIndex += 1;
-  }
+  spans.forEach((span, index) => span.classList.toggle("textLayer__highlight", matchedItems.has(index)));
 }
 
 function normalizeText(text) {

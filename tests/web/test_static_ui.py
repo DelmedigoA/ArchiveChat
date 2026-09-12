@@ -56,7 +56,9 @@ def test_document_viewer_maps_exact_ai_quotes_to_pdf_text_layer_spans():
     assert 'new state.viewer.pdfjs.TextLayer' in app_js
     assert 'await textLayerTask.render()' in app_js
     assert 'applyEvidenceHighlights' in app_js
-    assert 'indexOf(normalizeText(quote))' in app_js
+    assert 'normalizedPage.indexOf(normalizedQuote)' in app_js
+    assert 'const normalizedSpans = spans.map' in app_js
+    assert 'spanOffsets' in app_js
     assert 'textLayer__highlight' in app_js
     assert 'id="document-text-layer"' in index
 
