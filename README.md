@@ -22,15 +22,56 @@ and controlled vocabularies come from ArchiveAI and remain in
 ```sh
 uv sync
 uv run pytest
+# Browser formatting checks (Node.js 22+; no npm install needed):
+node --test tests/web/formatting.test.mjs
 ```
 
 Use test-driven development: add a failing behavior test, implement the smallest
 change that passes, then refactor. Tests use fictional catalog data and require
 no network access or model credentials.
 
-Next milestone: search a small catalog collection and return candidate item IDs
-with metadata-grounded reasons. Content conversion and model-based relevance
-evaluations will follow as separate steps.
+Generated embedding caches, compiled items, catalog manifests, and acquisition
+queues are local outputs excluded from Git. The compilation commands below
+recreate the item collection and manifest; semantic search creates its embedding
+cache when needed. The document, FAQ, project metadata, and prompt files remain
+versioned runtime inputs.
+
+## Finding your way around
+
+Start with the entry point for the flow you are changing. Both chat interfaces
+use the same options and runtime construction:
+
+```text
+chat/__main__.py (terminal) ─┐
+                           ├─ cli_options.py → chat/runtime.py → chat/graph.py
+web/__main__.py (HTTP) ─────┘                                      ↓
+                                                           chat/tools/*
+                                                                 ↓
+                                                        retrieval collections
+```
+
+All paths below are relative to `src/archivechat/`.
+
+| Location | Responsibility |
+| --- | --- |
+| `models/`, `catalog/` | Stored item/content/representation contracts and ArchiveAI catalog schema/vocabularies |
+| `compilation/articles.py` | Convert saved ArchiveAI article/thread exports to items |
+| `compilation/workbook.py`, `workbook_rows.py` | Import workbook/export files; normalize paired catalog rows |
+| `compilation/fetch_missing.py` | Build the acquisition queue from the manifest |
+| `config.py`, `cli_options.py` | Read YAML; resolve and validate CLI/environment settings |
+| `chat/runtime.py` | Construct providers, collections, tools, and the graph |
+| `chat/graph.py`, `chat/prompts.py` | Agent/tool loop and prompt assembly |
+| `chat/collection.py`, `documents.py`, `faqs.py`, `project_metadata.py` | Load, search, and read each kind of material |
+| `chat/search.py`, `chat/embeddings.py` | Shared retrieval math and embedding cache |
+| `chat/tools/`, `chat/web_tools.py` | Model-facing tools and optional public web lookups |
+| `chat/results.py` | Extract answer text and inspected item summaries |
+| `web/app.py`, `web/streaming.py` | HTTP routes/history; graph events translated to SSE |
+| `web/static/app.js` | Browser entry point and event wiring |
+| `web/static/chat.js`, `formatting.js` | Streaming messages; Markdown, citations, escaping, and text direction |
+| `web/static/document-viewer.js`, `item-modal.js`, `state.js` | PDF controls; source details; shared UI state and DOM references |
+
+See [the developer guide](docs/architecture.md) for execution flow, state ownership,
+data boundaries, and where to make common changes.
 
 ## Compile saved ArchiveAI exports
 

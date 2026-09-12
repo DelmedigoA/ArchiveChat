@@ -53,8 +53,8 @@ def test_extract_read_items_handles_responses_api_tool_content_shape():
     assert extract_read_items([message]) == [item.model_dump(mode='json')]
 
 
-def test_item_summary_uses_catalog_when_present(guardian_item_path):
-    item = Item.model_validate_json(guardian_item_path.read_text()).model_dump(mode='json')
+def test_item_summary_uses_catalog_when_present(item_data):
+    item = Item.model_validate(item_data).model_dump(mode='json')
 
     summary = item_summary(item)
 

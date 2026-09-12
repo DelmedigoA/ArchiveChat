@@ -5,7 +5,7 @@ import httpx
 import pytest
 from openai import APIError, NotFoundError
 
-from archivechat.chat import __main__ as cli
+from archivechat.chat import __main__ as cli, runtime
 
 
 @pytest.fixture
@@ -16,14 +16,14 @@ def setup_cli(monkeypatch):
     model = Mock()
     graph = Mock()
     graph.invoke.return_value = {'messages': [SimpleNamespace(content='Hello')]}
-    monkeypatch.setattr(cli, 'ChatOpenAI', model)
-    monkeypatch.setattr(cli, 'OpenAIEmbeddings', Mock(return_value='embeddings'))
-    monkeypatch.setattr(cli, 'Collection', Mock())
-    monkeypatch.setattr(cli, 'DocumentCollection', Mock(return_value='document_collection'))
-    monkeypatch.setattr(cli, 'ProjectMetadataCollection', Mock(return_value='project_metadata_collection'))
-    monkeypatch.setattr(cli, 'make_web_tools', Mock(return_value=['web_tool']))
+    monkeypatch.setattr(runtime, 'ChatOpenAI', model)
+    monkeypatch.setattr(runtime, 'OpenAIEmbeddings', Mock(return_value='embeddings'))
+    monkeypatch.setattr(runtime, 'Collection', Mock())
+    monkeypatch.setattr(runtime, 'DocumentCollection', Mock(return_value='document_collection'))
+    monkeypatch.setattr(runtime, 'ProjectMetadataCollection', Mock(return_value='project_metadata_collection'))
+    monkeypatch.setattr(runtime, 'make_web_tools', Mock(return_value=['web_tool']))
     build_graph = Mock(return_value=graph)
-    monkeypatch.setattr(cli, 'build_graph', build_graph)
+    monkeypatch.setattr(runtime, 'build_graph', build_graph)
     return model, graph, build_graph
 
 
@@ -75,16 +75,16 @@ def test_cli_allows_search_limit_override(monkeypatch, setup_cli):
 def test_cli_passes_project_metadata_collection(monkeypatch, setup_cli):
     monkeypatch.setattr('sys.argv', ['archivechat', '--question', 'hi'])
     cli.main()
-    cli.ProjectMetadataCollection.assert_called_once()
+    runtime.ProjectMetadataCollection.assert_called_once()
     assert setup_cli[2].call_args.kwargs['project_metadata_collection'] == 'project_metadata_collection'
 
 
 def test_cli_can_enable_openai_embeddings(monkeypatch, setup_cli):
     monkeypatch.setattr('sys.argv', ['archivechat', '--semantic-search', '--include-document', '--question', 'hi'])
     cli.main()
-    cli.OpenAIEmbeddings.assert_called_once_with(model='text-embedding-3-small', timeout=60, max_retries=1)
-    assert cli.Collection.call_args.kwargs['embeddings'].__class__.__name__ == 'CachedEmbeddings'
-    assert cli.DocumentCollection.call_args.kwargs['embeddings'].__class__.__name__ == 'CachedEmbeddings'
+    runtime.OpenAIEmbeddings.assert_called_once_with(model='text-embedding-3-small', timeout=60, max_retries=1)
+    assert runtime.Collection.call_args.kwargs['embeddings'].__class__.__name__ == 'CachedEmbeddings'
+    assert runtime.DocumentCollection.call_args.kwargs['embeddings'].__class__.__name__ == 'CachedEmbeddings'
 
 
 def test_cli_allows_embedding_model_override(monkeypatch, setup_cli):
@@ -92,13 +92,13 @@ def test_cli_allows_embedding_model_override(monkeypatch, setup_cli):
         'archivechat', '--semantic-search', '--embedding-model', 'text-embedding-3-large', '--question', 'hi',
     ])
     cli.main()
-    assert cli.OpenAIEmbeddings.call_args.kwargs['model'] == 'text-embedding-3-large'
+    assert runtime.OpenAIEmbeddings.call_args.kwargs['model'] == 'text-embedding-3-large'
 
 
 def test_cli_can_enable_web_tools(monkeypatch, setup_cli):
     monkeypatch.setattr('sys.argv', ['archivechat', '--web-tools', '--question', 'hi'])
     cli.main()
-    cli.make_web_tools.assert_called_once_with()
+    runtime.make_web_tools.assert_called_once_with()
     assert setup_cli[2].call_args.kwargs['extra_tools'] == ['web_tool']
 
 

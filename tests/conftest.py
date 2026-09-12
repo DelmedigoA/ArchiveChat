@@ -1,5 +1,4 @@
 import pytest
-from pathlib import Path
 
 
 @pytest.fixture
@@ -29,8 +28,3 @@ def item_data():
             "figures_tags_hebrew": [],
         },
     }
-
-
-@pytest.fixture
-def guardian_item_path():
-    return Path("data/guardian-sample/compiled/items/107dd93c-fbf9-5088-b6c4-328eb384f81b.json")

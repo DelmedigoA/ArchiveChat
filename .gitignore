@@ -6,3 +6,9 @@ __pycache__/
 .DS_Store
 /data/guardian-sample/
 /data/archiveai/compiled/
+/data/archiveai/catalog-manifest.json
+/data/archiveai/acquisition-queue.jsonl
+/data/index/
+.ruff_cache/
+.playwright-cli/
+/output/playwright/

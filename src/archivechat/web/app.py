@@ -1,8 +1,7 @@
 """Starlette app for the local ArchiveLens web UI."""
 
-import json
 from pathlib import Path
-from typing import Any, AsyncIterator
+from typing import Any
 
 from langchain_core.messages import HumanMessage
 from starlette.applications import Starlette
@@ -11,76 +10,21 @@ from starlette.responses import FileResponse, JSONResponse, StreamingResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
-from archivechat.chat.results import _json_from_content, extract_read_items, item_summary, message_text
+# Re-export existing helpers so callers can keep their original imports.
+from .streaming import (
+    TOOL_STATUS,
+    chunk_text,
+    final_payload,
+    item_from_tool_event,
+    result_messages_from_event,
+    sse,
+    stream_chat_events,
+)
 
 
 STATIC_DIR = Path(__file__).with_name('static')
 DOCUMENT_PDF_PATH = Path(__file__).resolve().parents[3] / 'Gaza_English-v6.7.0-5.7.25 (2).pdf'
 DOCUMENT_PDF_ROUTE = '/documents/bearing-witness-gaza-english-v6.7.0.pdf'
-
-
-TOOL_STATUS = {
-    'search_items': 'Searching the archive…',
-    'read_item': 'Reading archive records…',
-    'search_bearing_witness_document': 'Searching the Bearing Witness document…',
-    'read_bearing_witness_pages': 'Reading document pages…',
-    'list_project_metadata_records': 'Checking project context…',
-    'read_project_metadata_record': 'Checking project context…',
-    'search_faqs': 'Checking FAQ metadata…',
-    'read_faq': 'Checking FAQ metadata…',
-    'search_wikipedia': 'Checking public web context…',
-    'read_wikipedia_summary': 'Checking public web context…',
-    'fetch_web_page_text': 'Checking public web context…',
-}
-
-
-def sse(event: str, payload: dict[str, Any]) -> str:
-    return f"event: {event}\ndata: {json.dumps(payload, ensure_ascii=False)}\n\n"
-
-
-def chunk_text(chunk: Any) -> str:
-    content = getattr(chunk, 'content', None)
-    if isinstance(content, str):
-        return content
-    if isinstance(content, list):
-        text_blocks = [
-            block['text']
-            for block in content
-            if isinstance(block, dict)
-            and block.get('type') in {'text', 'output_text'}
-            and isinstance(block.get('text'), str)
-        ]
-        return ''.join(text_blocks)
-    return ''
-
-
-def final_payload(result_messages: list[Any], start_index: int = 0) -> dict[str, Any]:
-    current_turn_messages = result_messages[start_index:]
-    return {
-        'answer': message_text(result_messages[-1].content),
-        'items': [item_summary(item) for item in extract_read_items(current_turn_messages)],
-    }
-
-
-def item_from_tool_event(event: dict[str, Any]) -> dict[str, Any] | None:
-    if event.get('event') != 'on_tool_end' or event.get('name') != 'read_item':
-        return None
-    output = event.get('data', {}).get('output')
-    payload = None
-    if isinstance(output, dict):
-        payload = output
-    else:
-        payload = _json_from_content(getattr(output, 'content', None))
-    if isinstance(payload, dict) and payload.get('id') and payload.get('contents') is not None:
-        return item_summary(payload)
-    return None
-
-
-def result_messages_from_event(event: dict[str, Any]) -> list[Any] | None:
-    output = event.get('data', {}).get('output')
-    if isinstance(output, dict) and isinstance(output.get('messages'), list) and output['messages']:
-        return output['messages']
-    return None
 
 
 def create_app(
@@ -99,16 +43,20 @@ def create_app(
 
     async def document_config(request: Request):
         """Expose the public, deployment-managed PDF location to the lazy viewer."""
-        return JSONResponse({
-            'pdf_url': document_pdf_url or '',
-            'title': 'Bearing Witness – Gaza',
-            'version': 'English v6.7.0 · July 5, 2025',
-        })
+        return JSONResponse(
+            {
+                'pdf_url': document_pdf_url or '',
+                'title': 'Bearing Witness – Gaza',
+                'version': 'English v6.7.0 · July 5, 2025',
+            }
+        )
 
     async def document_pdf(request: Request):
         """Serve the local development asset with byte-range support when present."""
         if document_pdf_path is None or not document_pdf_path.is_file():
-            return JSONResponse({'detail': 'Bearing Witness PDF asset is unavailable'}, status_code=404)
+            return JSONResponse(
+                {'detail': 'Bearing Witness PDF asset is unavailable'}, status_code=404
+            )
         return FileResponse(document_pdf_path, media_type='application/pdf')
 
     async def chat(request: Request):
@@ -118,7 +66,9 @@ def create_app(
             return JSONResponse({'error': 'Question is required'}, status_code=400)
         turn_start_index = len(messages)
         try:
-            result = graph.invoke({'messages': [*messages, HumanMessage(content=question)]}, {'recursion_limit': 25})
+            result = graph.invoke(
+                {'messages': [*messages, HumanMessage(content=question)]}, {'recursion_limit': 25}
+            )
         except Exception as exc:
             return JSONResponse({'error': 'Chat failed', 'detail': str(exc)}, status_code=500)
 
@@ -132,52 +82,10 @@ def create_app(
         if not question:
             return JSONResponse({'error': 'Question is required'}, status_code=400)
 
-        async def events() -> AsyncIterator[str]:
-            turn_start_index = len(messages)
-            final_messages = None
-            emitted_text = False
-            emitted_item_ids = set()
-            last_status = None
-            try:
-                last_status = 'Reviewing material…'
-                yield sse('status', {'message': last_status})
-                async for event in graph.astream_events(
-                    {'messages': [*messages, HumanMessage(content=question)]},
-                    {'recursion_limit': 25},
-                    version='v2',
-                ):
-                    event_type = event.get('event')
-                    name = event.get('name')
-                    if event_type == 'on_tool_start' and name in TOOL_STATUS:
-                        status = TOOL_STATUS[name]
-                        if status != last_status:
-                            last_status = status
-                            yield sse('status', {'message': status, 'tool': name})
-                    elif event_type == 'on_chat_model_stream':
-                        text = chunk_text(event.get('data', {}).get('chunk'))
-                        if text:
-                            emitted_text = True
-                            if last_status != 'Writing answer…':
-                                last_status = 'Writing answer…'
-                                yield sse('status', {'message': last_status})
-                            yield sse('delta', {'text': text})
-                    item = item_from_tool_event(event)
-                    if item and item.get('item_id') not in emitted_item_ids:
-                        emitted_item_ids.add(item.get('item_id'))
-                        yield sse('item', {'item': item})
-                    maybe_messages = result_messages_from_event(event)
-                    if maybe_messages:
-                        final_messages = maybe_messages
-
-                if final_messages is None:
-                    raise RuntimeError('Streaming completed without final graph messages')
-                messages[:] = final_messages
-                yield sse('final', {**final_payload(final_messages, turn_start_index), 'replace': emitted_text})
-                yield sse('done', {})
-            except Exception as exc:
-                yield sse('error', {'message': 'Chat failed', 'detail': str(exc)})
-
-        return StreamingResponse(events(), media_type='text/event-stream')
+        return StreamingResponse(
+            stream_chat_events(graph, messages, question),
+            media_type='text/event-stream',
+        )
 
     routes = [
         Route('/', index),
