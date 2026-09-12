@@ -53,7 +53,8 @@ def test_document_viewer_maps_exact_ai_quotes_to_pdf_text_layer_spans():
     index = Path('src/archivelens/web/static/index.html').read_text()
 
     assert 'getTextContent()' in app_js
-    assert 'renderTextLayer' in app_js
+    assert 'new state.viewer.pdfjs.TextLayer' in app_js
+    assert 'await textLayerTask.render()' in app_js
     assert 'applyEvidenceHighlights' in app_js
     assert 'indexOf(normalizeText(quote))' in app_js
     assert 'textLayer__highlight' in app_js

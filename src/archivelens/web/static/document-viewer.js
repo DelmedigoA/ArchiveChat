@@ -149,11 +149,12 @@ async function renderDocumentPage() {
   pageLayer.style.height = `${Math.floor(viewport.height)}px`;
   textLayer.replaceChildren();
   textLayer.style.setProperty("--scale-factor", scale);
-  await state.viewer.pdfjs.renderTextLayer({
+  const textLayerTask = new state.viewer.pdfjs.TextLayer({
     textContentSource: textContent,
     container: textLayer,
     viewport,
-  }).promise;
+  });
+  await textLayerTask.render();
   await page.render({ canvasContext: context, viewport, transform: [pixelRatio, 0, 0, pixelRatio, 0, 0] }).promise;
   applyEvidenceHighlights(textContent.items, state.viewer.page === state.viewer.evidencePage ? state.viewer.evidence : []);
   setDocumentStatus(`Page ${state.viewer.page} of ${pdf.numPages}`);
