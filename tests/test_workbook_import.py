@@ -86,7 +86,6 @@ def test_workbook_import_preserves_manifest_and_output_side_effects(tmp_path):
     original_bytes = compiled.read_bytes()
     payload = json.loads(original_bytes)
     assert payload['contents'][0]['text_body'] == '  Saved body.  '
-    assert payload['contents'][0]['representations'][0]['text'] == 'Saved body.'
     assert not (output / f'{entries[1].item_id}.json').exists()
 
     assert import_workbook(workbook_path, export_dir=export_dir, output_dir=output) == entries

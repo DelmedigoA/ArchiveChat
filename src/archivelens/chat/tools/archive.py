@@ -17,7 +17,7 @@ def make_archive_tools(collection: Collection, search_limit: int = 10) -> list[B
 
     @tool
     def read_item(item_id: str) -> dict:
-        """Read an entire item, including its catalog, full articles, and representations."""
+        """Read an entire item, including its catalog and full source content."""
         return collection.read(item_id)
 
     return [search_items, read_item]

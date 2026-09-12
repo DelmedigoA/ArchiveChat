@@ -6,9 +6,9 @@ from uuid import UUID
 from pydantic import BaseModel, Field
 
 from ..catalog import CatalogRecord
-from .content import ArticleContent, SocialThreadContent
+from .content import ArticleContent, TweetThread
 
-Content = Annotated[ArticleContent | SocialThreadContent, Field(discriminator='kind')]
+Content = Annotated[ArticleContent | TweetThread, Field(discriminator='kind')]
 
 
 class Item(BaseModel):

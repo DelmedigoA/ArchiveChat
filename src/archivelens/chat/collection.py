@@ -4,7 +4,7 @@ import re
 from collections import Counter
 from pathlib import Path
 
-from ..models import Item
+from ..models import Item, TweetThread
 from .embeddings import CachedEmbeddings as CachedEmbeddings  # Original import path remains valid.
 from .embeddings import Embeddings
 from .search import bm25_score, cosine_similarity, tokens
@@ -19,7 +19,7 @@ class Collection:
         self.content_available = {}
         for path in sorted(directory.glob('*.json')):
             item = Item.model_validate_json(path.read_text())
-            if not item.contents or not any(c.text_body.strip() for c in item.contents):
+            if not item.contents or not any(self._content_text(c).strip() for c in item.contents):
                 continue
             key = str(item.id)
             if key in self.items:
@@ -28,7 +28,7 @@ class Collection:
             searchable_text = self._searchable_text(item)
             self.search_texts[key] = searchable_text
             self.content_available[key] = bool(
-                item.contents and any(c.text_body.strip() for c in item.contents)
+                item.contents and any(self._content_text(c).strip() for c in item.contents)
             )
             document_tokens = tokens(searchable_text)
             self.documents[key] = Counter(document_tokens)
@@ -63,7 +63,7 @@ class Collection:
             score = bm25_score + semantic_score
             if score <= 0:
                 continue
-            body = '\n\n'.join(c.text_body for c in item.contents)
+            body = '\n\n'.join(self._content_text(c) for c in item.contents)
             first = next(
                 (
                     m.start()
@@ -74,7 +74,7 @@ class Collection:
             )
             start = max(0, first - 100)
             catalog = item.catalog_record
-            titles = ' '.join(c.title for c in item.contents)
+            titles = ' '.join(self._content_title(c, item) for c in item.contents)
             matches.append(
                 {
                     'item_id': key,
@@ -100,9 +100,19 @@ class Collection:
     def _searchable_text(self, item: Item) -> str:
         catalog = item.catalog_record
         metadata = catalog.model_dump_json() if catalog else ''
-        body = '\n\n'.join(c.text_body for c in item.contents)
-        titles = ' '.join(c.title for c in item.contents)
+        body = '\n\n'.join(self._content_text(c) for c in item.contents)
+        titles = ' '.join(self._content_title(c, item) for c in item.contents)
         return f'{metadata} {titles} {body}'
+
+    def _content_text(self, content) -> str:
+        if isinstance(content, TweetThread):
+            return _tweet_thread_text(content)
+        return content.text_body
+
+    def _content_title(self, content, item: Item) -> str:
+        return content.title if hasattr(content, 'title') else (
+            item.catalog_record.english_title if item.catalog_record else ''
+        )
 
     def _bm25_score(self, item_id: str, query_terms: list[str]) -> float:
         return bm25_score(
@@ -117,3 +127,12 @@ class Collection:
         self, query_vector: list[float], document_vector: list[float] | None
     ) -> float:
         return cosine_similarity(query_vector, document_vector)
+
+
+def _tweet_thread_text(thread: TweetThread) -> str:
+    parts = []
+    for index, post in enumerate(thread.thread, 1):
+        text = '\n'.join(part.content for part in post.content if part.kind == 'text')
+        if text:
+            parts.append(f'Post {index} — {post.author} — {post.published_at}\n{text}')
+    return '\n\n'.join(parts)

@@ -4,14 +4,13 @@ ArchiveLens will help an agent discover relevant archive items, inspect their
 content, and cite evidence. Compilation prepares existing material; chat searches
 and reads the resulting collection.
 
-The implemented contracts are `Item`, `ArticleContent`, and `TextRepresentation`.
-An item has a UUID, an optional existing `CatalogRecord`, and zero or more articles.
-Each article preserves its source URL, title, and supplied body text. Its optional
-text representations contain prepared text and the converter/version that produced
-it (`produced_by`). Their nesting preserves item → article → representation links.
-Representations currently cover whole articles. The first converter preserves
-paragraphs and trims surrounding whitespace; passage locations and indexing
-are not implemented yet.
+The implemented contracts are `Item`, `ArticleContent`, and `TweetThread`.
+An item has a UUID, an optional existing `CatalogRecord`, and zero or more source
+contents. Each article preserves its source URL, title, and supplied body text.
+Tweet threads preserve ArchiveAI's structured URL/language/posts model, including
+typed text, image, and video content blocks. Search derives plain text from the
+preserved source content at runtime. Passage locations and indexing are not
+implemented yet.
 
 An item does not require a local content file. The catalog schema
 and controlled vocabularies come from ArchiveAI and remain in

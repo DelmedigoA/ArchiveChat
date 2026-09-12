@@ -7,10 +7,7 @@ from typing import Any
 from uuid import NAMESPACE_URL, uuid5
 
 from ..catalog import CatalogRecord
-from ..models import ArticleContent, Item, SocialThreadContent, TextRepresentation
-
-ARTICLE_CONVERTER = "article-text-v1"
-SOCIAL_THREAD_CONVERTER = "social-thread-text-v1"
+from ..models import ArticleContent, Item, Post, TweetThread
 
 
 def compile_article(folder: Path) -> Item:
@@ -27,52 +24,24 @@ def compile_article(folder: Path) -> Item:
     )
 
 
-def _compile_content(folder: Path, raw: dict[str, Any], catalog: CatalogRecord) -> ArticleContent | SocialThreadContent:
+def _compile_content(folder: Path, raw: dict[str, Any], catalog: CatalogRecord) -> ArticleContent | TweetThread:
     if isinstance(raw.get("text_body"), str) and raw["text_body"].strip():
         article = ArticleContent(
             id=uuid5(NAMESPACE_URL, raw["url"] + "#article"),
             url=raw["url"], title=raw.get("title") or catalog.english_title, text_body=raw["text_body"],
         )
-        text = article.text_body.strip()
-        article.representations.append(TextRepresentation(
-            id=uuid5(article.id, ARTICLE_CONVERTER + "\n" + text),
-            text=text, produced_by=ARTICLE_CONVERTER,
-        ))
         return article
 
-    thread_text = _thread_text(raw.get("thread"))
-    if thread_text:
-        thread = SocialThreadContent(
+    posts = raw.get("thread")
+    if posts:
+        thread = TweetThread(
             id=uuid5(NAMESPACE_URL, raw["url"] + "#social-thread"),
-            url=raw["url"], title=raw.get("title") or catalog.english_title,
-            text_body=thread_text, posts=raw.get("thread") or [],
+            url=raw["url"], lang=raw.get("lang"),
+            thread=[Post.model_validate(post) for post in posts],
         )
-        thread.representations.append(TextRepresentation(
-            id=uuid5(thread.id, SOCIAL_THREAD_CONVERTER + "\n" + thread_text),
-            text=thread_text, produced_by=SOCIAL_THREAD_CONVERTER,
-        ))
         return thread
 
     raise ValueError(f"{folder}: expected a news article text_body or nonempty social thread")
-
-
-def _thread_text(thread: Any) -> str:
-    if not isinstance(thread, list):
-        return ""
-    posts = []
-    for index, post in enumerate(thread, 1):
-        if not isinstance(post, dict):
-            continue
-        author = post.get("author") or "Unknown author"
-        published = post.get("published_at") or "unknown date"
-        parts = []
-        for block in post.get("content") or []:
-            if isinstance(block, dict) and isinstance(block.get("content"), str) and block["content"].strip():
-                parts.append(block["content"].strip())
-        body = "\n".join(parts).strip()
-        if body:
-            posts.append(f"Post {index} — {author} — {published}\n{body}")
-    return "\n\n".join(posts).strip()
 
 
 def main() -> None:

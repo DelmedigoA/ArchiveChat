@@ -46,9 +46,9 @@ interfaces share the same graph construction. There is no frontend build step.
 ## Follow a compiled item
 
 `compilation/articles.py` reads saved `raw_content.json` and `output.json` files.
-It validates the catalog and converts article or social-thread text into an
-`Item` containing content and text representations. Existing stable IDs,
-converter names, whitespace rules, and serialized formats are unchanged.
+It validates the catalog and converts article or TweetThread exports into an
+`Item` containing preserved source content. Article text remains in `text_body`;
+TweetThread exports retain ArchiveAI's structured posts and typed content blocks.
 
 `compilation/workbook.py` handles workbook/file traversal, export discovery,
 manifest entries, and output writes. `workbook_rows.py` handles cell normalization,
