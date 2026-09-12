@@ -68,7 +68,12 @@
             <button id="document-zoom-in" type="button" aria-label="Zoom in">+</button>
           </div>
           <p class="document-status" id="document-status" aria-live="polite">Choose a Bearing Witness citation to open the document.</p>
-          <div class="document-canvas-wrap" id="document-canvas-wrap"><canvas id="document-canvas"></canvas></div>
+          <div class="document-canvas-wrap" id="document-canvas-wrap">
+            <div class="document-page-layer" id="document-page-layer">
+              <canvas id="document-canvas"></canvas>
+              <div class="textLayer" id="document-text-layer"></div>
+            </div>
+          </div>
         </aside>
       </div>
     </main>

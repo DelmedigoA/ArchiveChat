@@ -136,14 +136,62 @@ async function renderDocumentPage() {
   const availableWidth = Math.max(280, els.documentCanvasWrap.clientWidth - 28);
   const scale = Math.min(availableWidth / baseViewport.width, 2) * state.viewer.zoom;
   const viewport = page.getViewport({ scale });
+  const textContent = await page.getTextContent();
   const pixelRatio = window.devicePixelRatio || 1;
   const context = els.documentCanvas.getContext("2d");
   els.documentCanvas.width = Math.floor(viewport.width * pixelRatio);
   els.documentCanvas.height = Math.floor(viewport.height * pixelRatio);
   els.documentCanvas.style.width = `${Math.floor(viewport.width)}px`;
   els.documentCanvas.style.height = `${Math.floor(viewport.height)}px`;
+  const pageLayer = document.getElementById("document-page-layer");
+  const textLayer = document.getElementById("document-text-layer");
+  pageLayer.style.width = `${Math.floor(viewport.width)}px`;
+  pageLayer.style.height = `${Math.floor(viewport.height)}px`;
+  textLayer.replaceChildren();
+  textLayer.style.setProperty("--scale-factor", scale);
+  await state.viewer.pdfjs.renderTextLayer({
+    textContentSource: textContent,
+    container: textLayer,
+    viewport,
+  }).promise;
   await page.render({ canvasContext: context, viewport, transform: [pixelRatio, 0, 0, pixelRatio, 0, 0] }).promise;
+  applyEvidenceHighlights(textContent.items, state.viewer.page === state.viewer.evidencePage ? state.viewer.evidence : []);
   setDocumentStatus(`Page ${state.viewer.page} of ${pdf.numPages}`);
+}
+
+function applyEvidenceHighlights(items, quotes) {
+  const textLayer = document.getElementById("document-text-layer");
+  const spans = [...textLayer.querySelectorAll("span")];
+  const normalizedItems = items.map((item) => normalizeText(item.str));
+  const normalizedPage = normalizedItems.filter(Boolean).join(" ");
+  const itemOffsets = [];
+  let offset = 0;
+  normalizedItems.forEach((text, index) => {
+    if (!text) return;
+    itemOffsets[index] = { start: offset, end: offset + text.length };
+    offset += text.length + 1;
+  });
+  const matchedItems = new Set();
+  for (const quote of quotes) {
+    const start = normalizedPage.indexOf(normalizeText(quote));
+    if (start < 0) continue;
+    const end = start + normalizeText(quote).length;
+    itemOffsets.forEach((range, index) => {
+      if (range && range.start < end && range.end > start) matchedItems.add(index);
+    });
+  }
+  let itemIndex = 0;
+  for (const span of spans) {
+    const spanText = normalizeText(span.textContent);
+    if (!spanText) continue;
+    while (itemIndex < normalizedItems.length && !normalizedItems[itemIndex]) itemIndex += 1;
+    span.classList.toggle("textLayer__highlight", matchedItems.has(itemIndex));
+    itemIndex += 1;
+  }
+}
+
+function normalizeText(text) {
+  return String(text || "").replace(/\s+/g, " ").trim();
 }
 
 function setDocumentStatus(message, isError = false) {

@@ -10,6 +10,7 @@ function isHebrewDominant(text) {
 }
 
 function renderAnswer(answer, items) {
+  const { text: answerText, evidence } = extractDocumentEvidence(answer);
   const byUrl = new Map();
   for (const item of items) {
     if (item.url) {
@@ -19,7 +20,7 @@ function renderAnswer(answer, items) {
 
   const citationNumbers = new Map();
   let nextCitationNumber = 1;
-  const escaped = escapeHtml(answer);
+  const escaped = escapeHtml(answerText);
   const formatted = renderInlineMarkdown(escaped);
   const linked = formatted.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, (match, label, url) => {
     const item = byUrl.get(normalizeUrl(url));
@@ -35,13 +36,13 @@ function renderAnswer(answer, items) {
     const title = item.title || label || `Source ${number}`;
     return `<button class="citation-link" type="button" data-item-id="${escapeAttribute(item.item_id)}" title="${escapeAttribute(title)}" aria-label="Open source ${number}: ${escapeAttribute(title)}">[${number}]</button>`;
   });
-  return renderDocumentCitations(linked)
+  return renderDocumentCitations(linked, evidence)
     .split(/\n{2,}/)
     .map((paragraph) => `<p>${paragraph.replace(/\n/g, "<br>")}</p>`)
     .join("");
 }
 
-function renderDocumentCitations(text) {
+function renderDocumentCitations(text, evidence = new Map()) {
   const citationPattern = /(\(?\s*Bearing\s+Witness\s*,\s*p{1,2}\.?\s*)(\d+)(?:\s*(?:–|—|-|to)\s*(\d+))?(\s*\)?)/gi;
   return text.replace(citationPattern, (match, prefix, start, end, suffix) => {
     const firstPage = Number(start);
@@ -49,8 +50,30 @@ function renderDocumentCitations(text) {
     if (!Number.isInteger(firstPage) || firstPage < 1 || lastPage < firstPage) {
       return match;
     }
-    return `<button class="document-citation-link" type="button" data-document-page="${firstPage}" title="Open Bearing Witness PDF at page ${firstPage}" aria-label="Open Bearing Witness PDF at page ${firstPage}">${prefix}${start}${end ? `–${end}` : ""}${suffix}</button>`;
+    const pageEvidence = evidence.get(firstPage) || [];
+    const evidenceAttribute = pageEvidence.length
+      ? ` data-document-evidence="${escapeAttribute(JSON.stringify(pageEvidence))}"`
+      : "";
+    return `<button class="document-citation-link" type="button" data-document-page="${firstPage}"${evidenceAttribute} title="Open Bearing Witness PDF at page ${firstPage}" aria-label="Open Bearing Witness PDF at page ${firstPage}">${prefix}${start}${end ? `–${end}` : ""}${suffix}</button>`;
   });
+}
+
+function extractDocumentEvidence(answer) {
+  const evidence = new Map();
+  const pattern = /\[\[BW_EVIDENCE\s+page=(\d+)\]\]([\s\S]*?)\[\[\/BW_EVIDENCE\]\]/g;
+  const text = String(answer || "").replace(pattern, (match, page, quote) => {
+    const pageNumber = Number(page);
+    const value = quote.trim();
+    if (Number.isInteger(pageNumber) && pageNumber > 0 && value) {
+      const existing = evidence.get(pageNumber) || [];
+      if (existing.length < 3 && !existing.includes(value)) {
+        existing.push(value);
+        evidence.set(pageNumber, existing);
+      }
+    }
+    return value;
+  });
+  return { text, evidence };
 }
 
 function renderInlineMarkdown(text) {
@@ -78,4 +101,4 @@ function escapeAttribute(value) {
   return escapeHtml(value).replaceAll("`", "&#096;");
 }
 
-export { isHebrewDominant, renderAnswer, renderDocumentCitations, renderInlineMarkdown, normalizeUrl, escapeHtml, escapeAttribute };
+export { isHebrewDominant, renderAnswer, renderDocumentCitations, renderInlineMarkdown, normalizeUrl, escapeHtml, escapeAttribute, extractDocumentEvidence };

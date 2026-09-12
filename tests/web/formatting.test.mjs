@@ -30,6 +30,16 @@ test("document citations open at the first page and invalid ranges remain text",
   );
 });
 
+test("AI evidence quotes are hidden and attached to the matching page citation", () => {
+  const html = renderAnswer(
+    'The report documents the incident. [[BW_EVIDENCE page=66]]Exact supporting sentence.[[/BW_EVIDENCE]] (Bearing Witness, p. 66)',
+    [],
+  );
+  assert.match(html, /Exact supporting sentence\./);
+  assert.doesNotMatch(html, /BW_EVIDENCE/);
+  assert.match(html, /data-document-evidence="\[&quot;Exact supporting sentence\.&quot;\]"/);
+});
+
 test("direction depends on the majority of letters, including Hebrew marks", () => {
   assert.equal(isHebrewDominant('שלום world'), false);
   assert.equal(isHebrewDominant('שלום עולם! 123'), true);

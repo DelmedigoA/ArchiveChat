@@ -33,6 +33,12 @@ els.resetConversation.addEventListener("click", resetConversation);
 document.addEventListener("click", async (event) => {
   const documentCitation = event.target.closest("[data-document-page]");
   if (documentCitation) {
+    try {
+      state.viewer.evidence = JSON.parse(documentCitation.dataset.documentEvidence || "[]");
+    } catch {
+      state.viewer.evidence = [];
+    }
+    state.viewer.evidencePage = Number(documentCitation.dataset.documentPage);
     await openDocumentViewer(Number(documentCitation.dataset.documentPage));
     return;
   }

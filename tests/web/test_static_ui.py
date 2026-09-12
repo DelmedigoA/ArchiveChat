@@ -48,6 +48,18 @@ def test_document_viewer_is_lazy_loaded_and_opens_the_citation_first_page():
     assert 'await showDocumentPage(page)' in app_js
 
 
+def test_document_viewer_maps_exact_ai_quotes_to_pdf_text_layer_spans():
+    app_js = read_ui_source()
+    index = Path('src/archivelens/web/static/index.html').read_text()
+
+    assert 'getTextContent()' in app_js
+    assert 'renderTextLayer' in app_js
+    assert 'applyEvidenceHighlights' in app_js
+    assert 'indexOf(normalizeText(quote))' in app_js
+    assert 'textLayer__highlight' in app_js
+    assert 'id="document-text-layer"' in index
+
+
 def test_document_viewer_has_resizable_accessible_two_pane_workspace():
     index = Path('src/archivelens/web/static/index.html').read_text()
     app_js = read_ui_source()

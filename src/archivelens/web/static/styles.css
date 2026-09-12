@@ -485,6 +485,42 @@ textarea {
   box-shadow: 0 2px 12px rgba(30, 30, 30, 0.18);
 }
 
+.document-page-layer {
+  position: relative;
+  margin: 0 auto;
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(30, 30, 30, 0.18);
+}
+
+.document-page-layer canvas {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  box-shadow: none;
+}
+
+.textLayer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  line-height: 1;
+  transform-origin: 0 0;
+}
+
+.textLayer span {
+  position: absolute;
+  color: transparent;
+  white-space: pre;
+  cursor: text;
+  transform-origin: 0 0;
+}
+
+.textLayer .textLayer__highlight {
+  background: rgba(255, 219, 72, 0.78);
+  border-radius: 3px;
+  box-shadow: 0 0 0 2px rgba(255, 202, 38, 0.2);
+}
+
 .note {
   margin: 14px 0 0;
   padding-top: 16px;

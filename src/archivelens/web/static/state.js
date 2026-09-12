@@ -11,6 +11,8 @@ export const state = {
     page: 1,
     zoom: 1,
     loading: null,
+    evidence: [],
+    evidencePage: null,
   },
 };
 
