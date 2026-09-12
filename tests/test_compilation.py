@@ -2,8 +2,8 @@ import json
 
 import pytest
 
-from archivechat.compilation.articles import compile_article
-from archivechat.models import Item
+from archivelens.compilation.articles import compile_article
+from archivelens.models import Item
 
 
 @pytest.fixture

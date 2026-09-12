@@ -3,8 +3,8 @@ from uuid import UUID
 import pytest
 from pydantic import ValidationError
 
-from archivechat.catalog import CatalogRecord
-from archivechat.models.item import Item
+from archivelens.catalog import CatalogRecord
+from archivelens.models.item import Item
 
 
 def test_item_requires_identity():

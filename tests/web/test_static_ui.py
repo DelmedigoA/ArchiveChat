@@ -1,14 +1,14 @@
 from pathlib import Path
 
 
-STATIC_DIR = Path('src/archivechat/web/static')
+STATIC_DIR = Path('src/archivelens/web/static')
 
 
 def read_ui_source():
     """Inspect application modules, excluding the vendored PDF.js runtime."""
     return '\n'.join(path.read_text() for path in sorted(STATIC_DIR.glob('*.js')))
 
-STATIC_CSS = Path('src/archivechat/web/static/styles.css')
+STATIC_CSS = Path('src/archivelens/web/static/styles.css')
 
 
 def test_archive_markdown_links_render_as_clickable_inline_citations():
@@ -49,7 +49,7 @@ def test_document_viewer_is_lazy_loaded_and_opens_the_citation_first_page():
 
 
 def test_document_viewer_has_resizable_accessible_two_pane_workspace():
-    index = Path('src/archivechat/web/static/index.html').read_text()
+    index = Path('src/archivelens/web/static/index.html').read_text()
     app_js = read_ui_source()
     styles = STATIC_CSS.read_text()
 
@@ -57,14 +57,14 @@ def test_document_viewer_has_resizable_accessible_two_pane_workspace():
     assert 'id="workspace-divider"' in index
     assert 'id="document-close"' in index
     assert 'function beginWorkspaceResize' in app_js
-    assert 'sessionStorage.setItem("archivechat:workspace-split"' in app_js
+    assert 'sessionStorage.setItem("archivelens:workspace-split"' in app_js
     assert 'function handleDividerKeydown' in app_js
     assert '.workspace--viewer-open' in styles
     assert 'grid-template-columns: minmax(360px, var(--chat-pane-width)) 10px minmax(360px, 1fr)' in styles
 
 
 def test_pdfjs_runtime_is_self_hosted_with_its_worker_and_license():
-    vendor = Path('src/archivechat/web/static/vendor/pdfjs')
+    vendor = Path('src/archivelens/web/static/vendor/pdfjs')
 
     assert (vendor / 'pdf.mjs').is_file()
     assert (vendor / 'pdf.worker.mjs').is_file()
@@ -94,7 +94,7 @@ def test_hebrew_dominant_messages_use_rtl_direction():
 
 
 def test_bearing_witness_fonts_are_loaded():
-    index = Path('src/archivechat/web/static/index.html').read_text()
+    index = Path('src/archivelens/web/static/index.html').read_text()
     styles = STATIC_CSS.read_text()
 
     assert 'family=Figtree' in index

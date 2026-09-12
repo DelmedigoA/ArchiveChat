@@ -44,11 +44,11 @@ def parse_chat_options(description: str, *, web: bool = False) -> argparse.Names
         from .web.app import DOCUMENT_PDF_PATH, DOCUMENT_PDF_ROUTE
 
         args.document_pdf_url = (
-            args.document_pdf_url or os.getenv('ARCHIVECHAT_DOCUMENT_PDF_URL') or DOCUMENT_PDF_ROUTE
+            args.document_pdf_url or os.getenv('ARCHIVELENS_DOCUMENT_PDF_URL') or DOCUMENT_PDF_ROUTE
         )
         args.document_pdf_path = Path(
             args.document_pdf_path
-            or os.getenv('ARCHIVECHAT_DOCUMENT_PDF_PATH')
+            or os.getenv('ARCHIVELENS_DOCUMENT_PDF_PATH')
             or DOCUMENT_PDF_PATH
         )
         args.host = args.host or '127.0.0.1'
@@ -66,48 +66,48 @@ def resolve_chat_defaults(args: argparse.Namespace) -> None:
     even when YAML supplies false. Keep this legacy precedence explicit.
     """
     args.collection = Path(args.collection or 'data/archiveai/compiled/items')
-    args.model = args.model or os.getenv('ARCHIVECHAT_MODEL') or 'gpt-5'
+    args.model = args.model or os.getenv('ARCHIVELENS_MODEL') or 'gpt-5'
     args.reasoning_effort = (
-        args.reasoning_effort or os.getenv('ARCHIVECHAT_REASONING_EFFORT') or 'low'
+        args.reasoning_effort or os.getenv('ARCHIVELENS_REASONING_EFFORT') or 'low'
     )
-    args.verbosity = args.verbosity or os.getenv('ARCHIVECHAT_VERBOSITY') or 'low'
+    args.verbosity = args.verbosity or os.getenv('ARCHIVELENS_VERBOSITY') or 'low'
     args.search_limit = (
         args.search_limit
         if args.search_limit is not None
-        else int(os.getenv('ARCHIVECHAT_SEARCH_LIMIT') or '10')
+        else int(os.getenv('ARCHIVELENS_SEARCH_LIMIT') or '10')
     )
     args.semantic_search = bool(
-        args.semantic_search or os.getenv('ARCHIVECHAT_SEMANTIC_SEARCH') == 'true'
+        args.semantic_search or os.getenv('ARCHIVELENS_SEMANTIC_SEARCH') == 'true'
     )
     args.embedding_model = (
-        args.embedding_model or os.getenv('ARCHIVECHAT_EMBEDDING_MODEL') or 'text-embedding-3-small'
+        args.embedding_model or os.getenv('ARCHIVELENS_EMBEDDING_MODEL') or 'text-embedding-3-small'
     )
     args.embedding_cache = Path(
         args.embedding_cache
-        or os.getenv('ARCHIVECHAT_EMBEDDING_CACHE')
+        or os.getenv('ARCHIVELENS_EMBEDDING_CACHE')
         or 'data/index/embeddings.json'
     )
-    args.web_tools = bool(args.web_tools or os.getenv('ARCHIVECHAT_WEB_TOOLS') == 'true')
-    args.faq_file = Path(args.faq_file or os.getenv('ARCHIVECHAT_FAQ_FILE') or FAQ_PATH)
+    args.web_tools = bool(args.web_tools or os.getenv('ARCHIVELENS_WEB_TOOLS') == 'true')
+    args.faq_file = Path(args.faq_file or os.getenv('ARCHIVELENS_FAQ_FILE') or FAQ_PATH)
     args.faq_search_limit = (
         args.faq_search_limit
         if args.faq_search_limit is not None
-        else int(os.getenv('ARCHIVECHAT_FAQ_SEARCH_LIMIT') or '5')
+        else int(os.getenv('ARCHIVELENS_FAQ_SEARCH_LIMIT') or '5')
     )
     args.document_text = Path(
-        args.document_text or os.getenv('ARCHIVECHAT_DOCUMENT_TEXT') or DOCUMENT_TEXT_PATH
+        args.document_text or os.getenv('ARCHIVELENS_DOCUMENT_TEXT') or DOCUMENT_TEXT_PATH
     )
     args.include_document = bool(
-        args.include_document or os.getenv('ARCHIVECHAT_INCLUDE_DOCUMENT') == 'true'
+        args.include_document or os.getenv('ARCHIVELENS_INCLUDE_DOCUMENT') == 'true'
     )
     args.document_search_limit = (
         args.document_search_limit
         if args.document_search_limit is not None
-        else int(os.getenv('ARCHIVECHAT_DOCUMENT_SEARCH_LIMIT') or '5')
+        else int(os.getenv('ARCHIVELENS_DOCUMENT_SEARCH_LIMIT') or '5')
     )
     args.project_metadata_file = Path(
         args.project_metadata_file
-        or os.getenv('ARCHIVECHAT_PROJECT_METADATA_FILE')
+        or os.getenv('ARCHIVELENS_PROJECT_METADATA_FILE')
         or PROJECT_METADATA_PATH
     )
 
@@ -115,13 +115,13 @@ def resolve_chat_defaults(args: argparse.Namespace) -> None:
 def validate_terminal_options(parser: argparse.ArgumentParser, args: argparse.Namespace) -> None:
     """Retain the terminal's additional model checks."""
     if not args.model:
-        parser.error('Set ARCHIVECHAT_MODEL or pass --model with an OpenAI model supporting tools')
+        parser.error('Set ARCHIVELENS_MODEL or pass --model with an OpenAI model supporting tools')
     if args.model.strip().upper() == 'YOUR_MODEL':
         parser.error('YOUR_MODEL is a placeholder. Omit --model to use gpt-5.')
     if not args.reasoning_effort:
-        parser.error('Set ARCHIVECHAT_REASONING_EFFORT or pass --reasoning-effort')
+        parser.error('Set ARCHIVELENS_REASONING_EFFORT or pass --reasoning-effort')
     if not args.verbosity:
-        parser.error('Set ARCHIVECHAT_VERBOSITY or pass --verbosity')
+        parser.error('Set ARCHIVELENS_VERBOSITY or pass --verbosity')
 
 
 def validate_chat_options(parser: argparse.ArgumentParser, args: argparse.Namespace) -> None:

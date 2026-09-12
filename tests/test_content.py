@@ -3,7 +3,7 @@ from uuid import uuid4
 import pytest
 from pydantic import ValidationError
 
-from archivechat.models import ArticleContent, Item, SocialThreadContent, TextRepresentation
+from archivelens.models import ArticleContent, Item, SocialThreadContent, TextRepresentation
 
 
 def test_article_and_representation_round_trip_with_item(item_data):

@@ -7,7 +7,7 @@ import pytest
 from langchain_core.messages import AIMessage
 from starlette.testclient import TestClient
 
-from archivechat.web.app import create_app
+from archivelens.web.app import create_app
 
 
 def read_events(response):

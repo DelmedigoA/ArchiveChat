@@ -4,7 +4,7 @@ import { state, els } from "./state.js";
 function setWorkspaceSplit(percent) {
   state.splitPercent = Math.max(30, Math.min(70, percent));
   els.workspace.style.setProperty("--chat-pane-width", `${state.splitPercent}%`);
-  sessionStorage.setItem("archivechat:workspace-split", String(state.splitPercent));
+  sessionStorage.setItem("archivelens:workspace-split", String(state.splitPercent));
 }
 
 function openWorkspace() {

@@ -1,6 +1,6 @@
 import json
 
-from archivechat.chat.faqs import FaqCollection
+from archivelens.chat.faqs import FaqCollection
 
 
 def test_faq_search_returns_questions_without_answers(tmp_path):

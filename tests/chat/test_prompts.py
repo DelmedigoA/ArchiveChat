@@ -1,4 +1,4 @@
-from archivechat.chat.prompts import PROMPT_DIR, load_chat_prompt
+from archivelens.chat.prompts import PROMPT_DIR, load_chat_prompt
 
 
 def test_chat_prompt_loads_system_and_instructions(tmp_path):

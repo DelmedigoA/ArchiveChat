@@ -15,7 +15,7 @@ are not implemented yet.
 
 An item does not require a local content file. The catalog schema
 and controlled vocabularies come from ArchiveAI and remain in
-`src/archivechat/catalog/`.
+`src/archivelens/catalog/`.
 
 ## Development
 
@@ -50,7 +50,7 @@ web/__main__.py (HTTP) ─────┘                                      �
                                                         retrieval collections
 ```
 
-All paths below are relative to `src/archivechat/`.
+All paths below are relative to `src/archivelens/`.
 
 | Location | Responsibility |
 | --- | --- |
@@ -80,8 +80,8 @@ creates catalog-only items for rows without fetched text and writes a manifest
 with content status. Posts are excluded from this first retrieval corpus.
 
 ```sh
-cd ~/Dev/ArchiveChat
-PYTHONPATH=src uv run python -m archivechat.compilation.workbook \
+cd ~/Dev/ArchiveLens
+PYTHONPATH=src uv run python -m archivelens.compilation.workbook \
   "/Users/delmedigo/Dev/ArchiveAI/resources/workbooks/ground truth hebrew 800.xlsx" \
   --export-dir /Users/delmedigo/Dev/ArchiveAI/data/HF_text_only \
   --output data/archiveai/compiled/items \
@@ -96,7 +96,7 @@ searchable or readable evidence.
 Create a controlled queue for ArchiveAI acquisition:
 
 ```sh
-PYTHONPATH=src uv run python -m archivechat.compilation.fetch_missing \
+PYTHONPATH=src uv run python -m archivelens.compilation.fetch_missing \
   --manifest data/archiveai/catalog-manifest.json \
   --output data/archiveai/acquisition-queue.jsonl \
   --limit 25
@@ -113,8 +113,8 @@ The importer reads ArchiveAI export folders containing `raw_content.json` and
 without fetching URLs or generating new catalog metadata.
 
 ```sh
-cd ~/Dev/ArchiveChat
-PYTHONPATH=src uv run python -m archivechat.compilation.articles \
+cd ~/Dev/ArchiveLens
+PYTHONPATH=src uv run python -m archivelens.compilation.articles \
   /Users/delmedigo/Dev/ArchiveAI/data/HF_text_only/* \
   --output data/archiveai/compiled/items
 ```
@@ -133,8 +133,8 @@ UI with all model, collection, document, search, embedding, and web-tool
 settings from that file:
 
 ```sh
-cd ~/Dev/ArchiveChat
-PYTHONPATH=src uv run python -m archivechat.web --config config/archive-lens.yaml
+cd ~/Dev/ArchiveLens
+PYTHONPATH=src uv run python -m archivelens.web --config config/archive-lens.yaml
 ```
 
 Command-line flags override values from the YAML file. The terminal chat entry
@@ -142,30 +142,30 @@ point accepts the same `--config` option.
 
 Set `OPENAI_API_KEY` in your local `.env` (or environment). The default model is
 `gpt-5` with `low` reasoning effort and `low` verbosity; optionally override
-those with `ARCHIVECHAT_MODEL`, `ARCHIVECHAT_REASONING_EFFORT`,
-`ARCHIVECHAT_VERBOSITY`, `--model`, `--reasoning-effort`, or `--verbosity`.
+those with `ARCHIVELENS_MODEL`, `ARCHIVELENS_REASONING_EFFORT`,
+`ARCHIVELENS_VERBOSITY`, `--model`, `--reasoning-effort`, or `--verbosity`.
 Search returns up to ten item candidates by default; override that with
-`ARCHIVECHAT_SEARCH_LIMIT` or `--search-limit`. FAQ search returns up to five
-questions by default; override that with `ARCHIVECHAT_FAQ_SEARCH_LIMIT` or
+`ARCHIVELENS_SEARCH_LIMIT` or `--search-limit`. FAQ search returns up to five
+questions by default; override that with `ARCHIVELENS_FAQ_SEARCH_LIMIT` or
 `--faq-search-limit`. The Bearing Witness document is excluded by default because
 it changes both the available tools and the system prompt. Enable it with
-`--include-document` (or `ARCHIVECHAT_INCLUDE_DOCUMENT=true`); document search
+`--include-document` (or `ARCHIVELENS_INCLUDE_DOCUMENT=true`); document search
 then returns up to five page matches by default, configurable with
-`ARCHIVECHAT_DOCUMENT_SEARCH_LIMIT` or `--document-search-limit`. Project metadata is loaded from
+`ARCHIVELENS_DOCUMENT_SEARCH_LIMIT` or `--document-search-limit`. Project metadata is loaded from
 `data/project-metadata/bearing-witness.json` by default; override that with
-`ARCHIVECHAT_PROJECT_METADATA_FILE` or `--project-metadata-file`. Reasoning runs through OpenAI's
+`ARCHIVELENS_PROJECT_METADATA_FILE` or `--project-metadata-file`. Reasoning runs through OpenAI's
 Responses API; pass `--reasoning-effort none` to disable reasoning. Run:
 
 ```sh
-cd ~/Dev/ArchiveChat
-PYTHONPATH=src uv run python -m archivechat.chat
+cd ~/Dev/ArchiveLens
+PYTHONPATH=src uv run python -m archivelens.chat
 ```
 
 Fully explicit live command:
 
 ```sh
-cd ~/Dev/ArchiveChat
-PYTHONPATH=src uv run python -m archivechat.chat \
+cd ~/Dev/ArchiveLens
+PYTHONPATH=src uv run python -m archivelens.chat \
   --collection data/archiveai/compiled/items \
   --model gpt-5.6-luna \
   --reasoning-effort low \
@@ -198,15 +198,15 @@ Bearing Witness document citations use `(Bearing Witness, p. 125)` or
 reader beside the conversation at the citation's first page. The default local
 asset is `data/documents/bearing-witness/bearing-witness-gaza-english-v6.7.0.pdf`; configure a versioned CDN/static
 asset with `document_pdf_url`, `--document-pdf-url`, or
-`ARCHIVECHAT_DOCUMENT_PDF_URL` for deployment. The serving host must support
+`ARCHIVELENS_DOCUMENT_PDF_URL` for deployment. The serving host must support
 HTTP byte-range requests for progressive loading. Override the local fallback
-file with `--document-pdf-path` or `ARCHIVECHAT_DOCUMENT_PDF_PATH`.
+file with `--document-pdf-path` or `ARCHIVELENS_DOCUMENT_PDF_PATH`.
 
 Fully explicit local web UI command:
 
 ```sh
-cd ~/Dev/ArchiveChat
-PYTHONPATH=src uv run python -m archivechat.web \
+cd ~/Dev/ArchiveLens
+PYTHONPATH=src uv run python -m archivelens.web \
   --collection data/archiveai/compiled/items \
   --model gpt-5.6-luna \
   --reasoning-effort low \
@@ -227,18 +227,18 @@ PYTHONPATH=src uv run python -m archivechat.web \
 To add semantic search with OpenAI embeddings for archive items and document pages:
 
 ```sh
-cd ~/Dev/ArchiveChat
-PYTHONPATH=src uv run python -m archivechat.chat --semantic-search
+cd ~/Dev/ArchiveLens
+PYTHONPATH=src uv run python -m archivelens.chat --semantic-search
 ```
 
 The default embedding model is `text-embedding-3-small`; override it with
-`ARCHIVECHAT_EMBEDDING_MODEL` or `--embedding-model`.
+`ARCHIVELENS_EMBEDDING_MODEL` or `--embedding-model`.
 
 To allow simple public web lookups:
 
 ```sh
-cd ~/Dev/ArchiveChat
-PYTHONPATH=src uv run python -m archivechat.chat --web-tools
+cd ~/Dev/ArchiveLens
+PYTHONPATH=src uv run python -m archivelens.chat --web-tools
 ```
 
 This adds `search_wikipedia`, `read_wikipedia_summary`, and
@@ -248,8 +248,8 @@ remain the evidence base for answers about the compiled collection.
 For one question:
 
 ```sh
-cd ~/Dev/ArchiveChat
-PYTHONPATH=src uv run python -m archivechat.chat \
+cd ~/Dev/ArchiveLens
+PYTHONPATH=src uv run python -m archivelens.chat \
   --question "What does the archive report about UNRWA funding?"
 ```
 

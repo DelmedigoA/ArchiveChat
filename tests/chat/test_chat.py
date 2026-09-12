@@ -3,9 +3,9 @@ from uuid import uuid4
 
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 
-from archivechat.models import Item, ArticleContent
-from archivechat.chat.collection import Collection
-from archivechat.chat.graph import build_graph
+from archivelens.models import Item, ArticleContent
+from archivelens.chat.collection import Collection
+from archivelens.chat.graph import build_graph
 
 
 def collection(tmp_path):

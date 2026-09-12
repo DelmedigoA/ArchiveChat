@@ -1,6 +1,6 @@
 from datetime import date
 
-from archivechat.compilation.workbook import _catalog, ARTICLE_TYPES
+from archivelens.compilation.workbook import _catalog, ARTICLE_TYPES
 
 
 def test_article_type_scope_excludes_posts():
@@ -36,7 +36,7 @@ def test_workbook_import_preserves_manifest_and_output_side_effects(tmp_path):
 
     from openpyxl import Workbook
 
-    from archivechat.compilation.workbook import import_workbook
+    from archivelens.compilation.workbook import import_workbook
 
     english = {
         'Number': 1, 'Link': 'https://example.com/1', 'Title': 'An article',

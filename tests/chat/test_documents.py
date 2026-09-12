@@ -3,10 +3,10 @@ from uuid import uuid4
 
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 
-from archivechat.chat.collection import Collection
-from archivechat.chat.documents import DocumentCollection
-from archivechat.chat.graph import build_graph
-from archivechat.models import ArticleContent, Item
+from archivelens.chat.collection import Collection
+from archivelens.chat.documents import DocumentCollection
+from archivelens.chat.graph import build_graph
+from archivelens.models import ArticleContent, Item
 
 
 def test_document_search_returns_page_matches_without_full_page_text(tmp_path):

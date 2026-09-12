@@ -4,8 +4,8 @@ from uuid import uuid4
 
 from langchain_core.messages import ToolMessage
 
-from archivechat.chat.results import extract_read_items, item_summary
-from archivechat.models import ArticleContent, Item
+from archivelens.chat.results import extract_read_items, item_summary
+from archivelens.models import ArticleContent, Item
 
 
 def test_extract_read_items_from_tool_messages():

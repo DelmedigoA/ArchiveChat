@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   renderAnswer, renderDocumentCitations, isHebrewDominant, escapeAttribute,
-} from "../../src/archivechat/web/static/formatting.js";
+} from "../../src/archivelens/web/static/formatting.js";
 
 test("answer formatting escapes HTML and retains inline Markdown and paragraphs", () => {
   assert.equal(

@@ -3,7 +3,7 @@ from uuid import uuid4
 
 import pytest
 
-from archivechat.chat.collection import Collection
+from archivelens.chat.collection import Collection
 
 
 def test_catalog_only_item_is_excluded_from_rag_collection(tmp_path, item_data):

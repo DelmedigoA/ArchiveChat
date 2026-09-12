@@ -1,12 +1,12 @@
 # Developer guide
 
-ArchiveChat has two flows: compilation prepares local JSON items; chat loads those
+ArchiveLens has two flows: compilation prepares local JSON items; chat loads those
 items and exposes search/read tools to a LangGraph agent. The terminal and web
 interfaces share the same graph construction. There is no frontend build step.
 
 ## Follow a question
 
-1. `python -m archivechat.chat` or `python -m archivechat.web` loads `.env`.
+1. `python -m archivelens.chat` or `python -m archivelens.web` loads `.env`.
 2. `cli_options.parse_chat_options()` parses flags, applies YAML values, resolves
    environment/default values, and performs the existing entry-point validation.
 3. `chat.runtime.build_runtime()` creates optional cached embeddings, loads archive,
@@ -106,11 +106,11 @@ scripted providers and graph events to check the application behavior reliably.
 ## Architectural references
 
 The current [Sefaria runtime facade](https://github.com/Sefaria/ai-chatbot/blob/main/server/chat/V2/agent/claude_service.py)
-separates dependency setup from execution. ArchiveChat applies that idea through
+separates dependency setup from execution. ArchiveLens applies that idea through
 one shared runtime function and focused HTTP/browser modules, retaining its
 existing Starlette/LangGraph stack.
 
 The local `/Users/delmedigo/Dev/ArchiveAI/src/archive_ai/catalog/ground_truth.py`
 is the reference for paired workbook-row modeling. Its separation of row
-normalization from file processing transfers here; ArchiveChat retains its own
+normalization from file processing transfers here; ArchiveLens retains its own
 existing normalization rules and catalog contracts.

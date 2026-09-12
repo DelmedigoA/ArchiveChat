@@ -1,6 +1,6 @@
 import json
 
-from archivechat.compilation.fetch_missing import build_queue
+from archivelens.compilation.fetch_missing import build_queue
 
 
 def test_build_queue_is_bounded_and_idempotent(tmp_path):

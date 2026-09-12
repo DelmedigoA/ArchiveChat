@@ -3,8 +3,8 @@
 import uvicorn
 from dotenv import load_dotenv
 
-from archivechat.chat.runtime import build_runtime
-from archivechat.cli_options import parse_chat_options
+from archivelens.chat.runtime import build_runtime
+from archivelens.cli_options import parse_chat_options
 
 from .app import create_app
 

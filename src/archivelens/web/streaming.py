@@ -5,7 +5,7 @@ from typing import Any, AsyncIterator
 
 from langchain_core.messages import HumanMessage
 
-from archivechat.chat.results import (
+from archivelens.chat.results import (
     _json_from_content,
     extract_read_items,
     item_summary,

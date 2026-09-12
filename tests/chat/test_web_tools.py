@@ -1,4 +1,4 @@
-from archivechat.chat.web_tools import make_web_tools
+from archivelens.chat.web_tools import make_web_tools
 
 
 class FakeResponse:

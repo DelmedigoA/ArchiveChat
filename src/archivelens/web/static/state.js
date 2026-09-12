@@ -3,7 +3,7 @@
 export const state = {
   items: new Map(),
   busy: false,
-  splitPercent: Number(sessionStorage.getItem("archivechat:workspace-split")) || 50,
+  splitPercent: Number(sessionStorage.getItem("archivelens:workspace-split")) || 50,
   viewer: {
     config: null,
     pdfjs: null,

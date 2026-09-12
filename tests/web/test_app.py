@@ -5,8 +5,8 @@ from uuid import uuid4
 from langchain_core.messages import AIMessage, ToolMessage
 from starlette.testclient import TestClient
 
-from archivechat.models import ArticleContent, Item
-from archivechat.web.app import chunk_text, create_app, item_from_tool_event
+from archivelens.models import ArticleContent, Item
+from archivelens.web.app import chunk_text, create_app, item_from_tool_event
 
 
 def test_chat_api_returns_answer_and_read_items():

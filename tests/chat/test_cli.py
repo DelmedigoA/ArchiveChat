@@ -5,13 +5,13 @@ import httpx
 import pytest
 from openai import APIError, NotFoundError
 
-from archivechat.chat import __main__ as cli, runtime
+from archivelens.chat import __main__ as cli, runtime
 
 
 @pytest.fixture
 def setup_cli(monkeypatch):
     monkeypatch.setattr(cli, 'load_dotenv', lambda: None)
-    monkeypatch.delenv('ARCHIVECHAT_MODEL', raising=False)
+    monkeypatch.delenv('ARCHIVELENS_MODEL', raising=False)
     monkeypatch.setenv('OPENAI_API_KEY', 'test-key')
     model = Mock()
     graph = Mock()
@@ -28,7 +28,7 @@ def setup_cli(monkeypatch):
 
 
 def test_cli_has_working_default(monkeypatch, setup_cli):
-    monkeypatch.setattr('sys.argv', ['archivechat', '--question', 'hi'])
+    monkeypatch.setattr('sys.argv', ['archivelens', '--question', 'hi'])
     cli.main()
     assert setup_cli[0].call_args.kwargs['model'] == 'gpt-5'
     assert setup_cli[0].call_args.kwargs['reasoning_effort'] == 'low'
@@ -40,7 +40,7 @@ def test_cli_prints_responses_api_text_blocks(monkeypatch, setup_cli, capsys):
     setup_cli[1].invoke.return_value = {'messages': [SimpleNamespace(content=[
         {'type': 'text', 'text': 'Hello from Responses API.', 'annotations': []},
     ])]}
-    monkeypatch.setattr('sys.argv', ['archivechat', '--question', 'hi'])
+    monkeypatch.setattr('sys.argv', ['archivelens', '--question', 'hi'])
     cli.main()
     out = capsys.readouterr().out
     assert 'ArchiveLens: Hello from Responses API.' in out
@@ -48,39 +48,39 @@ def test_cli_prints_responses_api_text_blocks(monkeypatch, setup_cli, capsys):
 
 
 def test_cli_allows_reasoning_effort_override(monkeypatch, setup_cli):
-    monkeypatch.setattr('sys.argv', ['archivechat', '--reasoning-effort', 'medium', '--question', 'hi'])
+    monkeypatch.setattr('sys.argv', ['archivelens', '--reasoning-effort', 'medium', '--question', 'hi'])
     cli.main()
     assert setup_cli[0].call_args.kwargs['reasoning_effort'] == 'medium'
 
 
 def test_cli_allows_verbosity_override(monkeypatch, setup_cli):
-    monkeypatch.setattr('sys.argv', ['archivechat', '--verbosity', 'medium', '--question', 'hi'])
+    monkeypatch.setattr('sys.argv', ['archivelens', '--verbosity', 'medium', '--question', 'hi'])
     cli.main()
     assert setup_cli[0].call_args.kwargs['verbosity'] == 'medium'
 
 
 def test_cli_omits_reasoning_effort_when_disabled(monkeypatch, setup_cli):
-    monkeypatch.setattr('sys.argv', ['archivechat', '--reasoning-effort', 'none', '--question', 'hi'])
+    monkeypatch.setattr('sys.argv', ['archivelens', '--reasoning-effort', 'none', '--question', 'hi'])
     cli.main()
     assert 'reasoning_effort' not in setup_cli[0].call_args.kwargs
     assert setup_cli[0].call_args.kwargs['use_responses_api'] is False
 
 
 def test_cli_allows_search_limit_override(monkeypatch, setup_cli):
-    monkeypatch.setattr('sys.argv', ['archivechat', '--search-limit', '7', '--question', 'hi'])
+    monkeypatch.setattr('sys.argv', ['archivelens', '--search-limit', '7', '--question', 'hi'])
     cli.main()
     assert setup_cli[2].call_args.kwargs['search_limit'] == 7
 
 
 def test_cli_passes_project_metadata_collection(monkeypatch, setup_cli):
-    monkeypatch.setattr('sys.argv', ['archivechat', '--question', 'hi'])
+    monkeypatch.setattr('sys.argv', ['archivelens', '--question', 'hi'])
     cli.main()
     runtime.ProjectMetadataCollection.assert_called_once()
     assert setup_cli[2].call_args.kwargs['project_metadata_collection'] == 'project_metadata_collection'
 
 
 def test_cli_can_enable_openai_embeddings(monkeypatch, setup_cli):
-    monkeypatch.setattr('sys.argv', ['archivechat', '--semantic-search', '--include-document', '--question', 'hi'])
+    monkeypatch.setattr('sys.argv', ['archivelens', '--semantic-search', '--include-document', '--question', 'hi'])
     cli.main()
     runtime.OpenAIEmbeddings.assert_called_once_with(model='text-embedding-3-small', timeout=60, max_retries=1)
     assert runtime.Collection.call_args.kwargs['embeddings'].__class__.__name__ == 'CachedEmbeddings'
@@ -89,21 +89,21 @@ def test_cli_can_enable_openai_embeddings(monkeypatch, setup_cli):
 
 def test_cli_allows_embedding_model_override(monkeypatch, setup_cli):
     monkeypatch.setattr('sys.argv', [
-        'archivechat', '--semantic-search', '--embedding-model', 'text-embedding-3-large', '--question', 'hi',
+        'archivelens', '--semantic-search', '--embedding-model', 'text-embedding-3-large', '--question', 'hi',
     ])
     cli.main()
     assert runtime.OpenAIEmbeddings.call_args.kwargs['model'] == 'text-embedding-3-large'
 
 
 def test_cli_can_enable_web_tools(monkeypatch, setup_cli):
-    monkeypatch.setattr('sys.argv', ['archivechat', '--web-tools', '--question', 'hi'])
+    monkeypatch.setattr('sys.argv', ['archivelens', '--web-tools', '--question', 'hi'])
     cli.main()
     runtime.make_web_tools.assert_called_once_with()
     assert setup_cli[2].call_args.kwargs['extra_tools'] == ['web_tool']
 
 
 def test_cli_rejects_invalid_search_limit(monkeypatch, setup_cli, capsys):
-    monkeypatch.setattr('sys.argv', ['archivechat', '--search-limit', '0', '--question', 'hi'])
+    monkeypatch.setattr('sys.argv', ['archivelens', '--search-limit', '0', '--question', 'hi'])
     with pytest.raises(SystemExit) as exc:
         cli.main()
     assert exc.value.code == 2
@@ -112,7 +112,7 @@ def test_cli_rejects_invalid_search_limit(monkeypatch, setup_cli, capsys):
 
 
 def test_placeholder_rejected_before_api_call(monkeypatch, setup_cli, capsys):
-    monkeypatch.setattr('sys.argv', ['archivechat', '--model', 'YOUR_MODEL', '--question', 'hi'])
+    monkeypatch.setattr('sys.argv', ['archivelens', '--model', 'YOUR_MODEL', '--question', 'hi'])
     with pytest.raises(SystemExit) as exc:
         cli.main()
     assert exc.value.code == 2
@@ -121,7 +121,7 @@ def test_placeholder_rejected_before_api_call(monkeypatch, setup_cli, capsys):
 
 
 def test_unavailable_model_is_readable_error(monkeypatch, setup_cli, capsys):
-    monkeypatch.setattr('sys.argv', ['archivechat', '--model', 'missing-model', '--question', 'hi'])
+    monkeypatch.setattr('sys.argv', ['archivelens', '--model', 'missing-model', '--question', 'hi'])
     setup_cli[1].invoke.side_effect = NotFoundError(
         'missing', response=httpx.Response(404, request=httpx.Request('POST', 'https://api.openai.com')),
         body=None,
@@ -133,7 +133,7 @@ def test_unavailable_model_is_readable_error(monkeypatch, setup_cli, capsys):
 
 
 def test_openai_api_error_includes_original_message(monkeypatch, setup_cli, capsys):
-    monkeypatch.setattr('sys.argv', ['archivechat', '--question', 'hi'])
+    monkeypatch.setattr('sys.argv', ['archivelens', '--question', 'hi'])
     setup_cli[1].invoke.side_effect = APIError(
         'unsupported parameter: reasoning_effort',
         request=httpx.Request('POST', 'https://api.openai.com'),

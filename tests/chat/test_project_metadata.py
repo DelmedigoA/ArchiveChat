@@ -1,6 +1,6 @@
 import json
 
-from archivechat.chat.project_metadata import PROJECT_METADATA_PATH, ProjectMetadataCollection
+from archivelens.chat.project_metadata import PROJECT_METADATA_PATH, ProjectMetadataCollection
 
 
 def test_project_metadata_lists_records_without_full_content(tmp_path):
