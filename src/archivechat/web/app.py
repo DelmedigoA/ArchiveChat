@@ -23,7 +23,13 @@ from .streaming import (
 
 
 STATIC_DIR = Path(__file__).with_name('static')
-DOCUMENT_PDF_PATH = Path(__file__).resolve().parents[3] / 'Gaza_English-v6.7.0-5.7.25 (2).pdf'
+DOCUMENT_PDF_PATH = (
+    Path(__file__).resolve().parents[3]
+    / 'data'
+    / 'documents'
+    / 'bearing-witness'
+    / 'bearing-witness-gaza-english-v6.7.0.pdf'
+)
 DOCUMENT_PDF_ROUTE = '/documents/bearing-witness-gaza-english-v6.7.0.pdf'
 
 

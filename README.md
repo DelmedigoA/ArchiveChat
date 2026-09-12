@@ -196,7 +196,7 @@ summary, URL, and tags.
 Bearing Witness document citations use `(Bearing Witness, p. 125)` or
 `(Bearing Witness, pp. 125–128)`. In the web UI, these open a resizable PDF.js
 reader beside the conversation at the citation's first page. The default local
-asset is `Gaza_English-v6.7.0-5.7.25 (2).pdf`; configure a versioned CDN/static
+asset is `data/documents/bearing-witness/bearing-witness-gaza-english-v6.7.0.pdf`; configure a versioned CDN/static
 asset with `document_pdf_url`, `--document-pdf-url`, or
 `ARCHIVECHAT_DOCUMENT_PDF_URL` for deployment. The serving host must support
 HTTP byte-range requests for progressive loading. Override the local fallback
