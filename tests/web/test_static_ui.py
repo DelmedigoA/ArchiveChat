@@ -57,8 +57,10 @@ def test_document_viewer_maps_exact_ai_quotes_to_pdf_text_layer_spans():
     assert 'await textLayerTask.render()' in app_js
     assert 'applyEvidenceHighlights' in app_js
     assert 'normalizedPage.indexOf(normalizedQuote)' in app_js
-    assert 'const normalizedSpans = spans.map' in app_js
-    assert 'spanOffsets' in app_js
+    assert 'const records = []' in app_js
+    assert 'normalizeWithMap' in app_js
+    assert 'wrapHighlightRanges' in app_js
+    assert 'document.createElement("mark")' in app_js
     assert 'textLayer__highlight' in app_js
     assert 'id="document-text-layer"' in index
 

@@ -163,29 +163,90 @@ async function renderDocumentPage() {
 function applyEvidenceHighlights(items, quotes) {
   const textLayer = document.getElementById("document-text-layer");
   const spans = [...textLayer.querySelectorAll("span")].filter((span) => normalizeText(span.textContent));
-  const normalizedSpans = spans.map((span) => normalizeText(span.textContent));
-  const normalizedPage = normalizedSpans.join(" ");
-  const spanOffsets = [];
+  const records = [];
   let offset = 0;
-  normalizedSpans.forEach((text, index) => {
-    spanOffsets[index] = { start: offset, end: offset + text.length };
-    offset += text.length + 1;
+  spans.forEach((span) => {
+    const normalized = normalizeWithMap(span.textContent);
+    records.push({ span, ...normalized, start: offset, end: offset + normalized.text.length });
+    offset += normalized.text.length + 1;
   });
-  const matchedItems = new Set();
+  const normalizedPage = records.map((record) => record.text).join(" ");
+  const rangesBySpan = new Map();
   for (const quote of quotes) {
     const normalizedQuote = normalizeText(quote);
     const start = normalizedPage.indexOf(normalizedQuote);
     if (start < 0) continue;
     const end = start + normalizedQuote.length;
-    spanOffsets.forEach((range, index) => {
-      if (range && range.start < end && range.end > start) matchedItems.add(index);
+    records.forEach((record) => {
+      const localStart = Math.max(start, record.start) - record.start;
+      const localEnd = Math.min(end, record.end) - record.start;
+      if (localStart >= localEnd) return;
+      const rawStart = record.map[localStart];
+      const rawEnd = record.map[localEnd - 1] + 1;
+      const ranges = rangesBySpan.get(record.span) || [];
+      ranges.push([rawStart, rawEnd]);
+      rangesBySpan.set(record.span, ranges);
     });
   }
-  spans.forEach((span, index) => span.classList.toggle("textLayer__highlight", matchedItems.has(index)));
+  for (const record of records) {
+    const ranges = mergeRanges(rangesBySpan.get(record.span) || []);
+    if (ranges.length) {
+      wrapHighlightRanges(record.span, ranges);
+    }
+  }
+}
+
+function normalizeWithMap(text) {
+  let normalized = "";
+  const map = [];
+  for (let index = 0; index < String(text || "").length; index += 1) {
+    const character = String(text || "")[index];
+    if (/\s/.test(character)) {
+      if (normalized && !normalized.endsWith(" ")) {
+        normalized += " ";
+        map.push(index);
+      }
+      continue;
+    }
+    normalized += character;
+    map.push(index);
+  }
+  while (normalized.endsWith(" ")) {
+    normalized = normalized.slice(0, -1);
+    map.pop();
+  }
+  return { text: normalized, map };
+}
+
+function mergeRanges(ranges) {
+  return ranges.sort((left, right) => left[0] - right[0]).reduce((merged, range) => {
+    const previous = merged.at(-1);
+    if (previous && range[0] <= previous[1]) {
+      previous[1] = Math.max(previous[1], range[1]);
+    } else {
+      merged.push([...range]);
+    }
+    return merged;
+  }, []);
+}
+
+function wrapHighlightRanges(span, ranges) {
+  const text = span.textContent;
+  span.replaceChildren();
+  let cursor = 0;
+  for (const [start, end] of ranges) {
+    if (start > cursor) span.append(document.createTextNode(text.slice(cursor, start)));
+    const mark = document.createElement("mark");
+    mark.className = "textLayer__highlight";
+    mark.textContent = text.slice(start, end);
+    span.append(mark);
+    cursor = end;
+  }
+  if (cursor < text.length) span.append(document.createTextNode(text.slice(cursor)));
 }
 
 function normalizeText(text) {
-  return String(text || "").replace(/\s+/g, " ").trim();
+  return normalizeWithMap(text).text;
 }
 
 function setDocumentStatus(message, isError = false) {

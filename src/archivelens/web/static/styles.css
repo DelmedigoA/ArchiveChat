@@ -503,7 +503,7 @@ textarea {
   position: absolute;
   inset: 0;
   overflow: hidden;
-  line-height: 1;
+  line-height: normal;
   transform-origin: 0 0;
 }
 
@@ -515,10 +515,12 @@ textarea {
   transform-origin: 0 0;
 }
 
-.textLayer .textLayer__highlight {
-  background: rgba(255, 219, 72, 0.78);
+.textLayer mark.textLayer__highlight {
+  padding: 0.08em 0.02em;
+  margin: -0.08em -0.02em;
+  background: rgba(255, 239, 145, 0.58);
   border-radius: 3px;
-  box-shadow: 0 0 0 2px rgba(255, 202, 38, 0.2);
+  box-shadow: 0 0 0 1px rgba(226, 187, 46, 0.14);
 }
 
 .note {
