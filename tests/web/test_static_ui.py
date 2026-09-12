@@ -51,6 +51,7 @@ def test_document_viewer_is_lazy_loaded_and_opens_the_citation_first_page():
 def test_document_viewer_maps_exact_ai_quotes_to_pdf_text_layer_spans():
     app_js = read_ui_source()
     index = Path('src/archivelens/web/static/index.html').read_text()
+    styles = STATIC_CSS.read_text()
 
     assert 'getTextContent()' in app_js
     assert 'new state.viewer.pdfjs.TextLayer' in app_js
@@ -63,6 +64,7 @@ def test_document_viewer_maps_exact_ai_quotes_to_pdf_text_layer_spans():
     assert 'wrapHighlightRanges' in app_js
     assert 'document.createElement("mark")' in app_js
     assert 'textLayer__highlight' in app_js
+    assert 'color: transparent' in styles
     assert 'id="document-text-layer"' in index
 
 

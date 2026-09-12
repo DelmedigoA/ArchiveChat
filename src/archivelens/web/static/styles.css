@@ -544,6 +544,7 @@ textarea {
 }
 
 .textLayer mark.textLayer__highlight {
+  color: transparent;
   padding: 1px;
   margin: -1px;
   background: rgba(255, 239, 145, 0.58);
