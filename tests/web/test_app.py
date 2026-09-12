@@ -55,6 +55,16 @@ def test_chat_api_rejects_empty_question():
     assert response.status_code == 400
 
 
+def test_chat_reset_clears_conversation_history():
+    app = create_app(graph=SimpleNamespace(), initial_messages=['old message'], static_dir=None)
+
+    response = TestClient(app).post('/api/chat/reset')
+
+    assert response.status_code == 200
+    assert response.json() == {'ok': True}
+
+
+
 def test_document_config_returns_deployment_managed_pdf_url():
     app = create_app(
         graph=SimpleNamespace(),

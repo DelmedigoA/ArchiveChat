@@ -19,6 +19,7 @@ export const els = {
   question: document.getElementById("question"),
   messages: document.getElementById("messages"),
   status: document.getElementById("status"),
+  resetConversation: document.getElementById("reset-conversation"),
   workspace: document.getElementById("workspace"),
   divider: document.getElementById("workspace-divider"),
   documentPane: document.getElementById("document-pane"),

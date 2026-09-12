@@ -93,12 +93,17 @@ def create_app(
             media_type='text/event-stream',
         )
 
+    async def reset_chat(request: Request):
+        messages.clear()
+        return JSONResponse({'ok': True})
+
     routes = [
         Route('/', index),
         Route('/api/document-config', document_config),
         Route(DOCUMENT_PDF_ROUTE, document_pdf),
         Route('/api/chat', chat, methods=['POST']),
         Route('/api/chat/stream', chat_stream, methods=['POST']),
+        Route('/api/chat/reset', reset_chat, methods=['POST']),
     ]
     if static_dir is not None:
         routes.append(Mount('/static', StaticFiles(directory=static_dir), name='static'))

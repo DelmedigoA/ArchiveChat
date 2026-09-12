@@ -188,6 +188,12 @@ textarea {
   font-size: 13px;
 }
 
+.chat-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .status-pill {
   padding: 6px 10px;
   border: 1px solid var(--line);
@@ -196,6 +202,27 @@ textarea {
   color: var(--muted);
   font-size: 13px;
   white-space: nowrap;
+}
+
+.reset-button {
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  padding: 6px 11px;
+  background: #fff;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.reset-button:hover,
+.reset-button:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.reset-button:disabled {
+  opacity: 0.55;
+  cursor: wait;
 }
 
 
@@ -323,6 +350,7 @@ textarea {
 
 .composer textarea:focus-visible,
 .composer button:focus-visible,
+.reset-button:focus-visible,
 .document-citation-link:focus-visible,
 .document-pane button:focus-visible,
 .item-modal button:focus-visible,

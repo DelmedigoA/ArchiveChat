@@ -35,6 +35,25 @@ function setBusy(value) {
   els.composer.querySelector("button").disabled = value;
 }
 
+async function resetConversation() {
+  if (state.busy) {
+    return;
+  }
+  els.resetConversation.disabled = true;
+  try {
+    const response = await fetch("/api/chat/reset", { method: "POST" });
+    if (!response.ok) {
+      throw new Error("The conversation could not be reset.");
+    }
+    els.messages.replaceChildren();
+    appendMessage("assistant", "Ask a question about the archive, the document, or the evidence.");
+  } catch (error) {
+    appendMessage("assistant", error.message || "The conversation could not be reset.");
+  } finally {
+    els.resetConversation.disabled = false;
+  }
+}
+
 async function readChatStream(body, streamState) {
   const reader = body.getReader();
   const decoder = new TextDecoder();
@@ -172,4 +191,4 @@ function setMessageDirection(node, text) {
   node.classList.toggle("message--rtl", isRtl);
 }
 
-export { ask, appendMessage, appendAssistantMessage, readChatStream, parseServerSentEvent };
+export { ask, appendMessage, appendAssistantMessage, readChatStream, parseServerSentEvent, resetConversation };

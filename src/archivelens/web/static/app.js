@@ -1,6 +1,6 @@
 // Page entry point: connect user interactions and show the opening message.
 import { state, els } from "./state.js";
-import { ask, appendMessage } from "./chat.js";
+import { ask, appendMessage, resetConversation } from "./chat.js";
 import { openItemModal, closeItemModal, copyItemUrl } from "./item-modal.js";
 import {
   openDocumentViewer, closeDocumentViewer, changeDocumentPage, changeDocumentZoom,
@@ -27,6 +27,8 @@ els.question.addEventListener("keydown", (event) => {
     els.composer.requestSubmit();
   }
 });
+
+els.resetConversation.addEventListener("click", resetConversation);
 
 document.addEventListener("click", async (event) => {
   const documentCitation = event.target.closest("[data-document-page]");
