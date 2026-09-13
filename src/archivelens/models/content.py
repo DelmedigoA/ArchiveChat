@@ -1,10 +1,10 @@
 """Source material attached to an archive item."""
 
 from datetime import datetime
-from typing import Literal
+from typing import Any, Literal
 from uuid import UUID
 
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel, Field, HttpUrl
 
 
 class ArticleContent(BaseModel):
@@ -60,3 +60,20 @@ class TweetThread(BaseModel):
     url: HttpUrl
     lang: Literal["en", "he", "ar"] | None = None
     thread: list[Post]
+
+
+class SocialThreadContent(BaseModel):
+    """Legacy compiled social-thread content from the ArchiveAI corpus.
+
+    ArchiveLens now models newly compiled threads as ``TweetThread``, but the
+    checked-in compiled corpus still uses ArchiveAI's flattened representation.
+    Keep this shape readable so existing corpora remain usable.
+    """
+
+    id: UUID
+    kind: Literal["social_thread"] = "social_thread"
+    url: HttpUrl
+    title: str
+    text_body: str
+    posts: list[dict[str, Any]] = Field(default_factory=list)
+    representations: list[dict[str, Any]] = Field(default_factory=list)

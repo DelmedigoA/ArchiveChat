@@ -19,7 +19,11 @@ def build_runtime(args: Namespace):
     if args.semantic_search:
         backend = OpenAIEmbeddings(model=args.embedding_model, timeout=60, max_retries=1)
         embeddings = CachedEmbeddings(backend, args.embedding_cache, args.embedding_model)
-    collection = Collection(args.collection, embeddings=embeddings)
+    collection = Collection(
+        args.collection,
+        embeddings=embeddings,
+        include_shallow_items=args.include_shallow_items,
+    )
     faq_collection = FaqCollection(args.faq_file)
     document_collection = None
     if args.include_document and args.document_text.exists():

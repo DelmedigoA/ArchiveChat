@@ -66,12 +66,16 @@ def _runtime_context(
 ) -> str:
     catalog_records = sum(1 for item in collection.items.values() if item.catalog_record is not None)
     item_count = len(collection.items)
+    content_items = sum(1 for available in collection.content_available.values() if available)
+    shallow_items = item_count - content_items
     faq_count = len(getattr(faq_collection, 'faqs', {})) if faq_collection else 0
     document_pages = len(getattr(document_collection, 'pages', [])) if document_collection else 0
     metadata_count = len(getattr(project_metadata_collection, 'records', {})) if project_metadata_collection else 0
     context = (
         'Runtime collection status:\n'
         f'- Available inspectable archive catalog records/items: {catalog_records} catalog records across {item_count} items.\n'
+        f'- Of those items, {content_items} have source content and {shallow_items} are catalog-only shallow items.\n'
+        '- Use catalog-only shallow items for discovery and metadata. Do not present their catalog metadata as evidence from the underlying source; only items marked content_available contain readable source text.\n'
         f'- Project FAQ metadata records available through dedicated FAQ tools: {faq_count}.\n'
         f'- Project metadata records available through dedicated metadata tools: {metadata_count}.\n'
         '- Project metadata is the first place to look for questions about ArchiveLens, Bearing Witness, the website, website navigation, sitemap/crawl inventory, the author Lee Mordechai, the About text, document identity, document structure, and version history.\n'

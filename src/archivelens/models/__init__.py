@@ -1,6 +1,7 @@
 """Shared data contracts for compilation and chat."""
 
 from .item import Content, Item
+from .shallow_catalog import ShallowCatalogRecord
 from .content import (
     ArticleContent,
     Image,
@@ -14,6 +15,6 @@ from .content import (
 )
 
 __all__ = [
-    "Item", "Content", "ArticleContent", "TweetThread", "Post", "TweetContent",
+    "Item", "Content", "ShallowCatalogRecord", "ArticleContent", "TweetThread", "Post", "TweetContent",
     "TweetTextContent", "TweetImageContent", "TweetVideoContent", "Image", "Video",
 ]

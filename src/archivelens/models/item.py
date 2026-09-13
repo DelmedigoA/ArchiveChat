@@ -3,12 +3,13 @@
 from typing import Annotated
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from ..catalog import CatalogRecord
-from .content import ArticleContent, TweetThread
+from .content import ArticleContent, SocialThreadContent, TweetThread
+from .shallow_catalog import ShallowCatalogRecord
 
-Content = Annotated[ArticleContent | TweetThread, Field(discriminator='kind')]
+Content = Annotated[ArticleContent | TweetThread | SocialThreadContent, Field(discriminator='kind')]
 
 
 class Item(BaseModel):
@@ -18,5 +19,19 @@ class Item(BaseModel):
     """
 
     id: UUID
-    catalog_record: CatalogRecord | None = None
+    catalog_record: CatalogRecord | ShallowCatalogRecord | None = None
     contents: list[Content] = Field(default_factory=list)
+
+    @field_validator('catalog_record', mode='before')
+    @classmethod
+    def parse_catalog_record(cls, value):
+        if isinstance(value, CatalogRecord | ShallowCatalogRecord) or value is None:
+            return value
+        if isinstance(value, dict):
+            # ArchiveAI records have the bilingual fields and numeric source-row ID.
+            # Keep their controlled-vocabulary validation strict; the CSV's separate
+            # shallow schema intentionally has a string source-row ID.
+            if 'hebrew_title' in value or isinstance(value.get('id'), int):
+                return CatalogRecord.model_validate(value)
+            return ShallowCatalogRecord.model_validate(value)
+        return value

@@ -74,9 +74,21 @@ data boundaries, and where to make common changes.
 
 ## Compile saved ArchiveAI exports
 
-Import the article-like catalog from the ArchiveAI ground-truth workbook. This
-creates catalog-only items for rows without fetched text and writes a manifest
-with content status. Posts are excluded from this first retrieval corpus.
+Compile the Bearing Witness archive CSV into catalog-only `Item` JSON records.
+This is the canonical source for the shallow archive pool. Existing fetched
+content with the same URL is preserved while its catalog metadata is refreshed.
+
+```sh
+cd ~/Dev/ArchiveLens
+PYTHONPATH=src uv run python -m archivelens.compilation.catalog_csv \
+  ../ArchiveLens-Light/Gaza-Archive_2026-09-12T11-35-58-403Z.csv \
+  --output data/archiveai/compiled/items
+```
+
+Import the article-like catalog from the ArchiveAI ground-truth workbook when
+you need its bilingual schema and export matching. It creates catalog-only
+items for rows without fetched text and writes a manifest with content status.
+Posts are excluded from this first retrieval corpus.
 
 ```sh
 cd ~/Dev/ArchiveLens
@@ -88,9 +100,10 @@ PYTHONPATH=src uv run python -m archivelens.compilation.workbook \
 ```
 
 The manifest distinguishes `content_available`, `catalog_only`, and `invalid`
-records. Only `content_available` records are written to the RAG collection;
-catalog-only records remain in the manifest for acquisition but are not
-searchable or readable evidence.
+records. Both valid content-backed and catalog-only records are written as item
+files. Catalog-only records are excluded from the default RAG collection, but
+can be included as shallow searchable/readable catalog records with
+`--include_shallow_items`.
 
 Create a controlled queue for ArchiveAI acquisition:
 
@@ -254,6 +267,11 @@ PYTHONPATH=src uv run python -m archivelens.chat \
 
 You can omit `--model` to use the value loaded from `.env`. Use `--collection`
 with a directory of compiled item JSON files to select another collection.
+By default, archive search uses only items with saved source content. Add
+`--include_shallow_items` (or set `ARCHIVELENS_INCLUDE_SHALLOW_ITEMS=true`) to
+load the full catalog as well. Shallow items contribute catalog metadata to
+search and can be read by the model, but contain no source text and are
+reported as `catalog_only`.
 Type `quit` to exit interactive chat. Conversation history is kept in memory
 for the current terminal session only.
 

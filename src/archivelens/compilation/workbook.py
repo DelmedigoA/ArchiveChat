@@ -31,6 +31,7 @@ from .workbook_rows import (
     clean_date as _date,
     normalize_value as _value,
 )
+from ..models import Item
 
 ARTICLE_TYPES = frozenset(
     {
@@ -100,10 +101,13 @@ def import_workbook(
                 str(export) if export else None,
             )
         )
-        if output_dir and export:
-            from .articles import compile_article
+        if output_dir:
+            if export:
+                from .articles import compile_article
 
-            compiled = compile_article(export)
+                compiled = compile_article(export)
+            else:
+                compiled = Item(id=item_id, catalog_record=record)
             item_path = output_dir / f"{item_id}.json"
             item_path.write_text(compiled.model_dump_json(indent=2) + "\n")
     return entries
@@ -123,15 +127,16 @@ def find_exports(export_dir: Path | None) -> dict[int, Path]:
 
 
 def prepare_output_directory(output_dir: Path | None) -> None:
-    """Keep the retrieval directory limited to content-backed item files."""
+    """Prepare the retrieval directory while preserving valid catalog items."""
     if output_dir:
         output_dir.mkdir(parents=True, exist_ok=True)
-        # The RAG directory is content-backed only. Remove catalog-only item
-        # files produced by older importer versions; their metadata remains in
-        # the manifest and can still be queued for acquisition.
+        # Remove only legacy placeholder files. Valid catalog-only items have
+        # an id and catalog record, and remain available to the opt-in
+        # full-catalog runtime.
         for path in output_dir.glob("*.json"):
             try:
-                if not json.loads(path.read_text()).get("contents"):
+                payload = json.loads(path.read_text())
+                if payload.get("contents") == [] and not payload.get("id"):
                     path.unlink()
             except OSError, ValueError, TypeError:
                 continue

@@ -1,4 +1,4 @@
-"""Small in-memory BM25 search over compiled items."""
+"""Small in-memory BM25 search over compiled archive items."""
 
 import re
 from collections import Counter
@@ -11,7 +11,12 @@ from .search import bm25_score, cosine_similarity, tokens
 
 
 class Collection:
-    def __init__(self, directory: Path, embeddings: Embeddings | None = None):
+    def __init__(
+        self,
+        directory: Path,
+        embeddings: Embeddings | None = None,
+        include_shallow_items: bool = False,
+    ):
         self.items = {}
         self.documents = {}
         self.document_frequencies = Counter()
@@ -19,7 +24,10 @@ class Collection:
         self.content_available = {}
         for path in sorted(directory.glob('*.json')):
             item = Item.model_validate_json(path.read_text())
-            if not item.contents or not any(self._content_text(c).strip() for c in item.contents):
+            content_available = bool(
+                item.contents and any(self._content_text(c).strip() for c in item.contents)
+            )
+            if not content_available and not include_shallow_items:
                 continue
             key = str(item.id)
             if key in self.items:
@@ -27,9 +35,7 @@ class Collection:
             self.items[key] = item
             searchable_text = self._searchable_text(item)
             self.search_texts[key] = searchable_text
-            self.content_available[key] = bool(
-                item.contents and any(self._content_text(c).strip() for c in item.contents)
-            )
+            self.content_available[key] = content_available
             document_tokens = tokens(searchable_text)
             self.documents[key] = Counter(document_tokens)
             self.document_frequencies.update(set(document_tokens))
@@ -80,7 +86,9 @@ class Collection:
                     'item_id': key,
                     'title': catalog.english_title if catalog else titles,
                     'description': catalog.english_description if catalog else '',
-                    'url': str(catalog.link) if catalog else str(item.contents[0].url),
+                    'url': str(catalog.link) if catalog else (
+                        str(item.contents[0].url) if item.contents else ''
+                    ),
                     'excerpt': body[start : start + 500],
                     'score': score,
                     'bm25_score': bm25_score,
@@ -95,7 +103,9 @@ class Collection:
 
     def read(self, item_id: str) -> dict:
         item = self.items.get(item_id)
-        return item.model_dump(mode='json') if item else {'error': 'Unknown item ID'}
+        if item:
+            return item.model_dump(mode='json')
+        return {'error': 'Unknown item ID'}
 
     def _searchable_text(self, item: Item) -> str:
         catalog = item.catalog_record

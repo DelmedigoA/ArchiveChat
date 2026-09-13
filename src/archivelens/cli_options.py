@@ -32,6 +32,11 @@ def parse_chat_options(description: str, *, web: bool = False) -> argparse.Names
     parser.add_argument('--include-document', action='store_true', default=None)
     parser.add_argument('--document-search-limit', type=int)
     parser.add_argument('--project-metadata-file', type=Path)
+    parser.add_argument(
+        '--include-shallow-items', '--include_shallow_items',
+        dest='include_shallow_items', action='store_true', default=None,
+        help='Include catalog-only items without fetched content in archive search and reads',
+    )
     if web:
         parser.add_argument('--host')
         parser.add_argument('--port', type=int)
@@ -109,6 +114,9 @@ def resolve_chat_defaults(args: argparse.Namespace) -> None:
         args.project_metadata_file
         or os.getenv('ARCHIVELENS_PROJECT_METADATA_FILE')
         or PROJECT_METADATA_PATH
+    )
+    args.include_shallow_items = bool(
+        args.include_shallow_items or os.getenv('ARCHIVELENS_INCLUDE_SHALLOW_ITEMS') == 'true'
     )
 
 

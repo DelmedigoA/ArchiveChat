@@ -36,7 +36,7 @@ def test_cli_overrides_yaml_which_overrides_environment(tmp_path, monkeypatch, w
 def test_environment_true_still_enables_switches_disabled_in_yaml(tmp_path, monkeypatch, web):
     config = tmp_path / 'config.yaml'
     config.write_text('semantic-search: false\nweb-tools: false\ninclude-document: false\n')
-    for name in ('SEMANTIC_SEARCH', 'WEB_TOOLS', 'INCLUDE_DOCUMENT'):
+    for name in ('SEMANTIC_SEARCH', 'WEB_TOOLS', 'INCLUDE_DOCUMENT', 'INCLUDE_SHALLOW_ITEMS'):
         monkeypatch.setenv(f'ARCHIVELENS_{name}', 'true')
     monkeypatch.setattr('sys.argv', ['archivelens', '--config', str(config)])
 
@@ -45,6 +45,18 @@ def test_environment_true_still_enables_switches_disabled_in_yaml(tmp_path, monk
     assert args.semantic_search is True
     assert args.web_tools is True
     assert args.include_document is True
+    assert args.include_shallow_items is True
+
+
+@pytest.mark.parametrize('option', ['--include-shallow-items', '--include_shallow_items'])
+def test_cli_can_include_shallow_items(monkeypatch, option):
+    monkeypatch.setattr('sys.argv', ['archivelens', option])
+
+    args = parse_chat_options('test')
+
+    assert args.include_shallow_items is True
+
+
 
 
 def test_web_retains_pdf_and_port_defaults(monkeypatch):
